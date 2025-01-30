@@ -7,7 +7,11 @@
         <tr>
             <th>Naslov</th>
             <th>Autor</th>
-            <th>Dostupnost</th>
+            <th>Žanr</th>
+            <th>Datum izdavanja</th>
+            <th>Recenzije</th>
+            <th>Status</th>
+            <th>Akcije</th>
         </tr>
     </thead>
     <tbody>
@@ -16,7 +20,20 @@
             <tr>
                 <td>@book.Title</td>
                 <td>@book.Author</td>
-                <td>@(book.IsAvailable ? "Dostupna" : "Posuđena")</td>
+                <td>@book.Genre</td>
+                <td>@book.PublishedDate.ToShortDateString()</td>
+                <td>@book.Review</td>
+                <td>@(book.IsBorrowed ? "Posuđena" : "Dostupna")</td>
+                <td>
+                    @if (!book.IsBorrowed)
+                    {
+                        <a asp-action="Borrow" asp-route-id="@book.Id" class="btn btn-warning">Posudi</a>
+                    }
+                    else
+                    {
+                        <a asp-action="Return" asp-route-id="@book.Id" class="btn btn-success">Vrati</a>
+                    }
+                </td>
             </tr>
         }
     </tbody>
