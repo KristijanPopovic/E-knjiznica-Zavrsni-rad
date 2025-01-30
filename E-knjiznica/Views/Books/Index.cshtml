@@ -1,0 +1,25 @@
+﻿@model IEnumerable<E_knjiznica.Models.Book>
+
+<h2>Popis knjiga</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Naslov</th>
+            <th>Autor</th>
+            <th>Dostupnost</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var book in Model)
+        {
+            <tr>
+                <td>@book.Title</td>
+                <td>@book.Author</td>
+                <td>@(book.IsAvailable ? "Dostupna" : "Posuđena")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Create" class="btn btn-primary">Dodaj novu knjigu</a>
