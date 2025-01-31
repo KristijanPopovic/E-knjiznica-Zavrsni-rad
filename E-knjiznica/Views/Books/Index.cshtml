@@ -1,6 +1,27 @@
 ﻿@model IEnumerable<E_knjiznica.Models.Book>
 
-<h2>Popis knjiga</h2>
+<h2>📚 Popis knjiga</h2>
+
+<!-- 🔍 Pretraga -->
+<form method="get" class="mb-3">
+    <div class="row">
+        <div class="col-md-3">
+            <input type="text" name="searchTitle" class="form-control" placeholder="Pretraži po naslovu" value="@Context.Request.Query["searchTitle"]" />
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="searchAuthor" class="form-control" placeholder="Pretraži po autoru" value="@Context.Request.Query["searchAuthor"]" />
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="searchGenre" class="form-control" placeholder="Pretraži po žanru" value="@Context.Request.Query["searchGenre"]" />
+        </div>
+        <div class="col-md-2">
+            <input type="number" name="searchYear" class="form-control" placeholder="Godina izdavanja" value="@Context.Request.Query["searchYear"]" />
+        </div>
+        <div class="col-md-1">
+            <button type="submit" class="btn btn-primary">🔎 Traži</button>
+        </div>
+    </div>
+</form>
 
 <table class="table">
     <thead>
@@ -22,21 +43,25 @@
                 <td>@book.Author</td>
                 <td>@book.Genre</td>
                 <td>@book.PublishedDate.ToShortDateString()</td>
-                <td>@book.Review</td>
-                <td>@(book.IsBorrowed ? "Posuđena" : "Dostupna")</td>
                 <td>
-                    @if (!book.IsBorrowed)
+                    @if (book.Reviews != null && book.Reviews.Any())
                     {
-                        <a asp-action="Borrow" asp-route-id="@book.Id" class="btn btn-warning">Posudi</a>
+                        <span>@book.Reviews.Average(r => r.Rating) ⭐</span> <br />
+                        <a asp-controller="Books" asp-action="Details" asp-route-id="@book.Id">Pogledaj recenzije</a>
                     }
                     else
                     {
-                        <a asp-action="Return" asp-route-id="@book.Id" class="btn btn-success">Vrati</a>
+                        <span>Nema recenzija</span>
                     }
+                </td>
+                <td>@(book.IsBorrowed ? "❌ Posuđena" : "✅ Dostupna")</td>
+                <td>
+                    <a asp-action="Borrow" asp-route-id="@book.Id" class="btn btn-warning">📖 Posudi</a>
+                    <a asp-action="Return" asp-route-id="@book.Id" class="btn btn-success">🔄 Vrati</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
 
-<a asp-action="Create" class="btn btn-primary">Dodaj novu knjigu</a>
+<a asp-action="Create" class="btn btn-success mt-3">➕ Dodaj novu knjigu</a>

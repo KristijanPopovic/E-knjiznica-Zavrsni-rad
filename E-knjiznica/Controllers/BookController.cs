@@ -3,6 +3,7 @@ using E_knjiznica.Data;
 using E_knjiznica.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace E_knjiznica.Controllers
 {
@@ -15,9 +16,32 @@ namespace E_knjiznica.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        // ✅ Updated Index method with search functionality
+        public async Task<IActionResult> Index(string searchTitle, string searchAuthor, string searchGenre, int? searchYear)
         {
-            return View(await _context.Books.ToListAsync());
+            var books = _context.Books.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchTitle))
+            {
+                books = books.Where(b => b.Title.Contains(searchTitle));
+            }
+
+            if (!string.IsNullOrEmpty(searchAuthor))
+            {
+                books = books.Where(b => b.Author.Contains(searchAuthor));
+            }
+
+            if (!string.IsNullOrEmpty(searchGenre))
+            {
+                books = books.Where(b => b.Genre.Contains(searchGenre));
+            }
+
+            if (searchYear.HasValue)
+            {
+                books = books.Where(b => b.PublishedDate.Year == searchYear.Value);
+            }
+
+            return View(await books.ToListAsync());
         }
 
         public IActionResult Create()
@@ -32,12 +56,11 @@ namespace E_knjiznica.Controllers
             if (ModelState.IsValid)
             {
                 _context.Books.Add(book);
-                await _context.SaveChangesAsync(); // This line saves the book to the database
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(book);
         }
-
 
         public async Task<IActionResult> Borrow(int id)
         {

@@ -1,0 +1,57 @@
+﻿<h3>📢 Ocjene korisnika</h3>
+
+@if (Model.Reviews != null && Model.Reviews.Any())
+{
+    @foreach (var review in Model.Reviews)
+    {
+        <div class="border p-3 mb-2">
+            <strong>@review.UserName</strong> –
+            <span class="text-warning">
+                <strong>@review.Rating/10</strong>
+                @for (int i = 0; i < review.Rating; i++)
+                {
+                    <span>⭐</span>
+                }
+            </span>
+        </div>
+    }
+}
+else
+{
+    <p>🚫 Ova knjiga još nema ocjena.</p>
+}
+
+<!-- ✅ Prikaz prosječne ocjene -->
+<h4>📊 Prosječna ocjena</h4>
+@if (Model.Reviews != null && Model.Reviews.Any())
+{
+    <p><strong>@Model.AverageRating.ToString("0.0")</strong>/10 ⭐</p>
+}
+else
+{
+    <p>🚫 Još nema ocjena za ovu knjigu.</p>
+}
+
+<!-- ✅ Forma za dodavanje ocjene -->
+<h4>➕ Dodaj svoju ocjenu</h4>
+
+<form asp-controller="Reviews" asp-action="AddReview" method="post">
+    <input type="hidden" name="bookId" value="@Model.Id" />
+
+    <div class="mb-3">
+        <label for="userName">Vaše ime</label>
+        <input type="text" name="userName" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label for="rating">Odaberite ocjenu (1-10)</label>
+        <select name="rating" class="form-control" required>
+            @for (int i = 1; i <= 10; i++)
+            {
+                <option value="@i">@i</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">📩 Ocijeni knjigu</button>
+</form>
