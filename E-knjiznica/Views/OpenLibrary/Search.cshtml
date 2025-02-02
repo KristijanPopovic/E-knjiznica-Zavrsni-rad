@@ -2,19 +2,11 @@
 
 <h2>🔍 Pretraži knjige (Open Library)</h2>
 
-<!-- Forma za unos pojma za pretragu -->
 <form method="post" class="mb-3">
     <input type="text" name="query" class="form-control" placeholder="Unesite naslov knjige ili autora" required />
     <button type="submit" class="btn btn-primary mt-2">Pretraži</button>
 </form>
 
-<!-- Poruka o grešci ako nije unesen pojam -->
-@if (ViewBag.ErrorMessage != null)
-{
-    <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
-}
-
-<!-- Prikaz rezultata pretrage -->
 @if (Model != null && Model.Any())
 {
     <h3>📚 Rezultati pretrage:</h3>
@@ -28,6 +20,15 @@
                         <h5 class="card-title">@book.Title</h5>
                         <p class="card-text"><strong>Autor:</strong> @book.AuthorName</p>
                         <p class="card-text"><strong>Godina:</strong> @book.FirstPublishYear</p>
+
+                        <!-- ✅ Forma za spremanje knjige -->
+                        <form asp-action="SaveBook" method="post">
+                            <input type="hidden" name="title" value="@book.Title" />
+                            <input type="hidden" name="author" value="@book.AuthorName" />
+                            <input type="hidden" name="publishedYear" value="@book.FirstPublishYear" />
+                            <input type="hidden" name="coverUrl" value="@book.CoverUrl" />
+                            <button type="submit" class="btn btn-success mt-2">💾 Spremi knjigu</button>
+                        </form>
                     </div>
                 </div>
             </div>

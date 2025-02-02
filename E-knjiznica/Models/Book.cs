@@ -25,9 +25,7 @@ namespace E_knjiznica.Models
 
         [Required]
         [DataType(DataType.Date)]
-        public DateTime PublishedDate { get; set; } // Datum izdavanja knjige
 
-        [DataType(DataType.Date)]
         public DateTime? BorrowedDate { get; set; } // Datum kada je knjiga posuđena (može biti null ako nije posuđena)
 
         public bool IsBorrowed { get; set; } = false; // Oznaka je li knjiga trenutno posuđena
@@ -44,5 +42,7 @@ namespace E_knjiznica.Models
 
         // Automatski izračun prosječne ocjene knjige (ako nema recenzija, vraća 0)
         public double AverageRating => (Reviews != null && Reviews.Any()) ? Reviews.Average(r => r.Rating) : 0;
+        public string PublishedYear { get; set; } // Zamijenili PublishedDate s godinom
+        public string CoverUrl { get; set; } // ✅ Dodano za sliku naslovnice
     }
 }

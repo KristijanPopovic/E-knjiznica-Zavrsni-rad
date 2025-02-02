@@ -1,0 +1,41 @@
+﻿@model IEnumerable<E_knjiznica.Models.Book>
+
+<h2>📚 Moja knjižnica</h2>
+
+@if (Model.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Naslov</th>
+                <th>Autor</th>
+                <th>Godina</th>
+                <th>Naslovnica</th>
+                <th>Akcije</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var book in Model)
+            {
+                <tr>
+                    <td>@book.Title</td>
+                    <td>@book.Author</td>
+                    <td>@book.PublishedYear</td>
+                    <td>
+                        <img src="@book.CoverUrl" alt="Naslovnica" style="height: 100px;" />
+                    </td>
+                    <td>
+                        <form asp-action="DeleteBook" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="@book.Id" />
+                            <button type="submit" class="btn btn-danger">🗑️ Obriši</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>❌ Trenutno nema spremljenih knjiga.</p>
+}

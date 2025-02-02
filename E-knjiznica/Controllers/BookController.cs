@@ -38,8 +38,9 @@ namespace E_knjiznica.Controllers
 
             if (searchYear.HasValue)
             {
-                books = books.Where(b => b.PublishedDate.Year == searchYear.Value);
+                books = books.Where(b => b.PublishedYear == searchYear.Value.ToString());
             }
+
 
             return View(await books.ToListAsync());
         }
@@ -91,6 +92,23 @@ namespace E_knjiznica.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
+        }
+        public async Task<IActionResult> SavedBooks()
+        {
+            var books = await _context.Books.ToListAsync();
+            return View(books);
+        }
+        // ✅ Brisanje spremljene knjige
+        [HttpPost]
+        public async Task<IActionResult> DeleteBook(int id)
+        {
+            var book = await _context.Books.FindAsync(id);
+            if (book != null)
+            {
+                _context.Books.Remove(book);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(SavedBooks));
         }
     }
 }
