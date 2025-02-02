@@ -28,33 +28,11 @@ namespace E_knjiznica.Controllers
                 if (!string.IsNullOrEmpty(searchAuthor))
                     books = books.Where(b => b.Author != null && b.Author.Name.Contains(searchAuthor));
 
-
                 if (!string.IsNullOrEmpty(searchGenre))
                     books = books.Where(b => b.Genre.Contains(searchGenre));
 
                 if (searchYear.HasValue)
                     books = books.Where(b => b.PublishedYear == searchYear.Value.ToString());
-
-                foreach (var book in await books.ToListAsync())
-                {
-                    if (book.BorrowedDate == null)
-                    {
-                        Console.WriteLine($"Knjiga s ID: {book.Id} ima NULL za BorrowedDate.");
-                    }
-                    if (book.ReturnDate == null)
-                    {
-                        Console.WriteLine($"Knjiga s ID: {book.Id} ima NULL za ReturnDate.");
-                    }
-                }
-                try
-                {
-                    return View(await books.ToListAsync());
-                }
-                catch (Exception ex)
-                {
-                    return Content($"Greška prilikom učitavanja podataka: {ex.Message}\n\n📋 Detalji: {ex.StackTrace}");
-                }
-
 
                 return View(await books.ToListAsync());
             }
@@ -63,8 +41,6 @@ namespace E_knjiznica.Controllers
                 return Content($"❌ Greška prilikom učitavanja podataka: {ex.Message}\n\n📋 Detalji: {ex.StackTrace}");
             }
         }
-
-
 
         public IActionResult Create()
         {
@@ -94,7 +70,6 @@ namespace E_knjiznica.Controllers
 
             book.IsBorrowed = true;
             book.BorrowedDate = DateTime.Now;
-
             book.ReturnDate = DateTime.Now.AddDays(30);
 
             await _context.SaveChangesAsync();
@@ -146,6 +121,18 @@ namespace E_knjiznica.Controllers
                 .ToListAsync();
 
             return View(dueSoonBooks);
+        }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            var book = await _context.Books
+                .Include(b => b.Reviews)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            if (book == null)
+                return NotFound();
+
+            return View(book);
         }
     }
 }

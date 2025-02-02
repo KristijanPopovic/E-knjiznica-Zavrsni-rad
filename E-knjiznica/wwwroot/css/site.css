@@ -17,6 +17,7 @@ html {
 
 body {
     margin-bottom: 60px;
+    padding: 10px; /* ✅ Dodan padding za bolje margine */
 }
 
 /* 🎨 Novi stilovi za moderan izgled */
@@ -26,9 +27,8 @@ body {
 body {
     font-family: 'Inter', sans-serif;
     background-color: #f8f9fa; /* Svijetla pozadina */
-    color: #212529; /* Tamnija boja teksta */
+    color: #343a40; /* Lagano tamnija boja teksta */
     margin: 0;
-    padding: 0;
     line-height: 1.6;
 }
 
@@ -53,18 +53,36 @@ h1, h2, h3 {
         color: white;
     }
 
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+}
+
 /* ✅ Kartice za knjige */
 .card {
     background-color: #ffffff;
     border: 1px solid #ddd;
-    border-radius: 10px;
+    border-radius: 12px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    transition: transform 0.2s ease-in-out;
+    transition: transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+    overflow: hidden;
 }
 
     .card:hover {
         transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
     }
+
+.card-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.card-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
 
 /* ✅ Navigacija */
 .navbar {
@@ -77,11 +95,19 @@ h1, h2, h3 {
     color: #007bff !important;
     font-weight: 500;
     margin-right: 15px;
+    transition: color 0.3s;
 }
 
     .nav-link:hover {
         color: #0056b3 !important;
         text-decoration: underline;
+    }
+
+    /* ✅ Istaknuta aktivna stavka u navigaciji */
+    .nav-link.active {
+        font-weight: bold;
+        color: #0056b3 !important;
+        border-bottom: 2px solid #007bff;
     }
 
 /* ✅ Tablica */
@@ -104,10 +130,56 @@ h1, h2, h3 {
         vertical-align: middle;
     }
 
+    /* ✅ Hover efekt na redove tablice */
+    .table tbody tr:hover {
+        background-color: #f1f9ff;
+        transition: background-color 0.3s ease;
+    }
+
 /* ✅ Responsivnost */
 @media (max-width: 768px) {
     .table th, .table td {
         font-size: 14px;
         padding: 8px;
     }
+
+    .navbar-brand {
+        font-size: 1.5rem;
+        color: #007bff !important;
+    }
+
+    .nav-link {
+        color: #212529 !important;
+        font-weight: 500;
+    }
+
+        .nav-link:hover {
+            color: #007bff !important;
+            text-decoration: underline;
+        }
+
+    .nav-item i {
+        margin-right: 6px;
+    }
+
+    footer {
+        background-color: #f8f9fa;
+        padding: 15px 0;
+        font-size: 14px;
+        color: #6c757d;
+    }
+    .card-title {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    .text-warning {
+        color: #ffc107 !important;
+    }
+
+    .text-secondary {
+        color: #e0e0e0 !important;
+    }
+
 }

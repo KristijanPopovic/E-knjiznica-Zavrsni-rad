@@ -19,5 +19,8 @@ namespace E_knjiznica.Models
         [Required]
         [Range(1, 10)]
         public int Rating { get; set; } // Ocjena (1-10)
+        [Required]
+        [StringLength(500)] // ✅ Ograničenje na 500 znakova
+        public string Content { get; set; } = string.Empty; // ✅ Dodano polje za sadržaj recenzije
     }
 }
