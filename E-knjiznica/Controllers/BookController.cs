@@ -113,9 +113,23 @@ namespace E_knjiznica.Controllers
 
         public async Task<IActionResult> SavedBooks()
         {
-            var books = await _context.Books.ToListAsync();
+            var books = await _context.Books
+                .Select(b => new Book
+                {
+                    Id = b.Id,
+                    Title = b.Title,
+                    Author = b.Author,
+                    Genre = b.Genre,
+                    PublishedYear = b.PublishedYear,
+                    BorrowedDate = b.BorrowedDate.HasValue ? b.BorrowedDate.Value : (DateTime?)null,
+                    ReturnDate = b.ReturnDate.HasValue ? b.ReturnDate.Value : (DateTime?)null,
+                    IsBorrowed = b.IsBorrowed
+                })
+                .ToListAsync();
+
             return View(books);
         }
+
 
         [HttpPost]
         public async Task<IActionResult> DeleteBook(int id)

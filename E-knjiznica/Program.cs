@@ -50,6 +50,8 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Books}/{action=Index}/{id?}");
 
+
+
 app.MapRazorPages(); // ✅ Omogućuje korištenje Identity stranica (login, register)
 
 app.Run();
