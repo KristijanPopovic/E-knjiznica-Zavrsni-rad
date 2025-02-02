@@ -37,6 +37,8 @@ namespace E_knjiznica.Controllers
         {
             if (ModelState.IsValid)
             {
+                // ✅ Ako je OpenLibraryId prazan, postavi zadanu vrijednost
+                author.OpenLibraryId ??= "N/A";
                 _context.Authors.Add(author);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -54,15 +56,14 @@ namespace E_knjiznica.Controllers
             if (author == null)
                 return NotFound();
 
-            // 📥 Dohvati dodatne podatke o autoru s Open Library API-ja
-            var openLibraryAuthor = await _authorService.GetAuthorDetailsAsync(author.OpenLibraryId);
-            var works = await _authorService.GetAuthorWorksAsync(author.OpenLibraryId);
+            // ✅ Dohvaćanje biografije s Open Library
+            var biography = await _authorService.GetAuthorBiographyAsync(author.OpenLibraryId);
 
-            ViewBag.OpenLibraryAuthor = openLibraryAuthor;
-            ViewBag.AuthorWorks = works;
+            ViewBag.Biography = biography;
 
             return View(author);
         }
+
 
         // ✅ Brisanje autora
         [HttpPost]

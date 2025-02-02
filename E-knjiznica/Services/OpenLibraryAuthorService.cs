@@ -2,6 +2,7 @@
 using System.Text.Json;
 using System.Threading.Tasks;
 using E_knjiznica.Models;
+using Newtonsoft.Json.Linq;
 
 namespace E_knjiznica.Services
 {
@@ -58,18 +59,34 @@ namespace E_knjiznica.Services
 
             return new List<Book>(); // Ako nema rezultata, vraćamo praznu listu
         }
-    }
+        // ✅ Dohvaćanje detalja o autoru
+        public async Task<string> GetAuthorBiographyAsync(string openLibraryId)
+        {
+            try
+            {
+                var url = $"https://openlibrary.org/authors/{openLibraryId}.json";
+                var response = await _httpClient.GetStringAsync(url);
 
-    // ✅ Model za parsiranje API odgovora
-    public class OpenLibraryWorksResponse
-    {
-        public List<OpenLibraryWork> Entries { get; set; }
-    }
+                var json = JObject.Parse(response);
+                return json["bio"]?.ToString() ?? "Biografija nije dostupna.";
+            }
+            catch
+            {
+                return "Biografija nije dostupna.";
+            }
+        }
 
-    public class OpenLibraryWork
-    {
-        public string Title { get; set; }
-        public string FirstPublishDate { get; set; }
-        public int? CoverId { get; set; }
+        // ✅ Model za parsiranje API odgovora
+        public class OpenLibraryWorksResponse
+        {
+            public List<OpenLibraryWork> Entries { get; set; }
+        }
+
+        public class OpenLibraryWork
+        {
+            public string Title { get; set; }
+            public string FirstPublishDate { get; set; }
+            public int? CoverId { get; set; }
+        }
     }
 }
