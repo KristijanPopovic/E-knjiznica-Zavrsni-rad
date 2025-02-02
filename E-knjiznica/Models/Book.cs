@@ -27,6 +27,9 @@ namespace E_knjiznica.Models
         [DataType(DataType.Date)]
 
         public DateTime? BorrowedDate { get; set; } // Datum kada je knjiga posuđena (može biti null ako nije posuđena)
+        
+        [DataType(DataType.Date)]
+        public DateTime? ReturnDate { get; set; } // ✅ Dodano za datum povrata
 
         public bool IsBorrowed { get; set; } = false; // Oznaka je li knjiga trenutno posuđena
 

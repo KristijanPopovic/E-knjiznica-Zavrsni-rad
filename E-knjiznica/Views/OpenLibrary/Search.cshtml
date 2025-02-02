@@ -21,12 +21,19 @@
                         <p class="card-text"><strong>Autor:</strong> @book.AuthorName</p>
                         <p class="card-text"><strong>Godina:</strong> @book.FirstPublishYear</p>
 
-                        <!-- ✅ Forma za spremanje knjige -->
+                        <!-- ✅ Forma za spremanje knjige s unosom žanra -->
                         <form asp-action="SaveBook" method="post">
                             <input type="hidden" name="title" value="@book.Title" />
                             <input type="hidden" name="author" value="@book.AuthorName" />
                             <input type="hidden" name="publishedYear" value="@book.FirstPublishYear" />
                             <input type="hidden" name="coverUrl" value="@book.CoverUrl" />
+
+                            <!-- ✅ Novo polje za unos žanra -->
+                            <div class="form-group mt-2">
+                                <label for="genre">Žanr</label>
+                                <input type="text" name="genre" class="form-control" placeholder="Unesite žanr" required />
+                            </div>
+
                             <button type="submit" class="btn btn-success mt-2">💾 Spremi knjigu</button>
                         </form>
                     </div>

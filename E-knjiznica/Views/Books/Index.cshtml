@@ -6,16 +6,16 @@
 <form method="get" class="mb-3">
     <div class="row">
         <div class="col-md-3">
-            <input type="text" name="searchTitle" class="form-control" placeholder="Pretraži po naslovu" value="@Context.Request.Query["searchTitle"]" />
+            <input type="text" name="searchTitle" class="form-control" placeholder="Pretraži po naslovu" value='@Context.Request.Query["searchTitle"]' />
         </div>
         <div class="col-md-3">
-            <input type="text" name="searchAuthor" class="form-control" placeholder="Pretraži po autoru" value="@Context.Request.Query["searchAuthor"]" />
+            <input type="text" name="searchAuthor" class="form-control" placeholder="Pretraži po autoru" value='@Context.Request.Query["searchAuthor"]' />
         </div>
         <div class="col-md-3">
-            <input type="text" name="searchGenre" class="form-control" placeholder="Pretraži po žanru" value="@Context.Request.Query["searchGenre"]" />
+            <input type="text" name="searchGenre" class="form-control" placeholder="Pretraži po žanru" value='@Context.Request.Query["searchGenre"]' />
         </div>
         <div class="col-md-2">
-            <input type="number" name="searchYear" class="form-control" placeholder="Godina izdavanja" value="@Context.Request.Query["searchYear"]" />
+            <input type="number" name="searchYear" class="form-control" placeholder="Godina izdavanja" value='@Context.Request.Query["searchYear"]' />
         </div>
         <div class="col-md-1">
             <button type="submit" class="btn btn-primary">🔎 Traži</button>
@@ -32,6 +32,7 @@
             <th>Datum izdavanja</th>
             <th>Recenzije</th>
             <th>Status</th>
+            <th>Datum povrata ⏰</th>
             <th>Akcije</th>
         </tr>
     </thead>
@@ -42,7 +43,7 @@
                 <td>@book.Title</td>
                 <td>@book.Author</td>
                 <td>@book.Genre</td>
-                <td>@book.PublishedYear</td>
+                <td>@(string.IsNullOrEmpty(book.PublishedYear) ? "-" : book.PublishedYear)</td>
 
                 <td>
                     @if (book.Reviews != null && book.Reviews.Any())
@@ -55,10 +56,20 @@
                         <span>Nema recenzija</span>
                     }
                 </td>
-                <td>@(book.IsBorrowed ? "❌ Posuđena" : "✅ Dostupna")</td>
+
+                <td>@(book.BorrowedDate.HasValue ? book.BorrowedDate.Value.ToShortDateString() : "-")</td>
+
+                <td>@(book.ReturnDate.HasValue ? book.ReturnDate.Value.ToShortDateString() : "-")</td>
+
                 <td>
-                    <a asp-action="Borrow" asp-route-id="@book.Id" class="btn btn-warning">📖 Posudi</a>
-                    <a asp-action="Return" asp-route-id="@book.Id" class="btn btn-success">🔄 Vrati</a>
+                    @if (!book.IsBorrowed)
+                    {
+                        <a asp-action="Borrow" asp-route-id="@book.Id" class="btn btn-warning">📖 Posudi</a>
+                    }
+                    else
+                    {
+                        <a asp-action="Return" asp-route-id="@book.Id" class="btn btn-success">🔄 Vrati</a>
+                    }
                 </td>
             </tr>
         }
@@ -66,3 +77,4 @@
 </table>
 
 <a asp-action="Create" class="btn btn-success mt-3">➕ Dodaj novu knjigu</a>
+<p class="alert alert-info">ℹ️ Sva posudba knjiga ograničena je na maksimalno 30 dana.</p>

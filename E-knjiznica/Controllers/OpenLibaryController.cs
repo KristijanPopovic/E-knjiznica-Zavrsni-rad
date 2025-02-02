@@ -2,25 +2,27 @@
 using E_knjiznica.Models;
 using E_knjiznica.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace E_knjiznica.Controllers
 {
     public class OpenLibraryController : Controller
     {
         private readonly OpenLibraryService _openLibraryService;
-        private readonly LibraryDbContext _context; // ✅ Dodano za pristup bazi podataka
-        public OpenLibraryController(OpenLibraryService openLibraryService)
+        private readonly LibraryDbContext _context; // ✅ Pristup bazi podataka
+
+        // ✅ Ispravljena inicijalizacija
+        public OpenLibraryController(OpenLibraryService openLibraryService, LibraryDbContext context)
         {
             _openLibraryService = openLibraryService;
+            _context = context;
         }
 
-        // Prikaz forme za pretragu
         public IActionResult Search()
         {
             return View();
         }
 
-        // Obrada pretrage nakon što korisnik unese pojam
         [HttpPost]
         public async Task<IActionResult> Search(string query)
         {
@@ -33,21 +35,57 @@ namespace E_knjiznica.Controllers
             var books = await _openLibraryService.SearchBooksAsync(query);
             return View(books);
         }
+
         [HttpPost]
-        public IActionResult SaveBook(string title, string author, string publishedYear, string coverUrl)
+        [HttpPost]
+        [HttpPost]
+        [HttpPost]
+        [HttpPost]
+        [HttpPost]
+        public async Task<IActionResult> SaveBook(string title, string author, string publishedYear, string coverUrl, string genre)
         {
-            var newBook = new Book
+            if (string.IsNullOrEmpty(title) || string.IsNullOrEmpty(author))
             {
-                Title = title,
-                Author = author,
-                PublishedYear = publishedYear,
-                CoverUrl = coverUrl
+                return Content("❌ Greška: Naslov i autor su obavezni.");
+            }
+
+            var book = new Book
+            {
+                Title = title ?? "Nepoznato",
+                Author = author ?? "Nepoznato",
+                PublishedYear = !string.IsNullOrEmpty(publishedYear) ? publishedYear : "Nepoznato",
+                CoverUrl = !string.IsNullOrEmpty(coverUrl) ? coverUrl : "default_cover.jpg",
+                Genre = !string.IsNullOrEmpty(genre) ? genre : "Nepoznat žanr",
+                IsBorrowed = false,
+
+                // ✅ Zamjena DateTime.MinValue s podržanim datumom
+                BorrowedDate = new DateTime(1753, 1, 1),
+                ReturnDate = new DateTime(1753, 1, 1)
             };
 
-            _context.Books.Add(newBook);
-            _context.SaveChanges();
-
-            return RedirectToAction("Search");
+            try
+            {
+                _context.Books.Add(book);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Index", "Books");
+            }
+            catch (DbUpdateException dbEx)
+            {
+                var innerException = dbEx.InnerException?.Message ?? "Nema dodatnih detalja.";
+                return Content($"❌ Greška prilikom spremanja knjige: {dbEx.Message}\n\n📋 Unutarnja greška: {innerException}");
+            }
+            catch (Exception ex)
+            {
+                return Content($"❌ Neočekivana greška: {ex.Message}\n\n📋 Detalji: {ex.StackTrace}");
+            }
         }
+
+
+
     }
+
+
+
 }
+
+
