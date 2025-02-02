@@ -1,0 +1,47 @@
+﻿@model E_knjiznica.Models.HomeViewModel
+
+<div class="container mt-4">
+    <!-- 📈 Najpopularnije knjige -->
+    <h3>📈 Najpopularnije knjige</h3>
+    <div class="book-slider d-flex flex-row overflow-auto">
+        @foreach (var book in Model.PopularBooks)
+        {
+            <div class="book-card m-2 p-2 border rounded shadow-sm text-center" style="width: 150px;">
+                <img src="@book.CoverUrl" alt="@book.Title" class="img-fluid" style="height: 200px; object-fit: cover;" />
+                <h5 class="mt-2">@book.Title</h5>
+                <p class="text-muted">@book.Author</p>
+                <button class="btn btn-secondary btn-sm">
+                    @(book.IsBorrowed ? "Checked Out" : "Available")
+                </button>
+            </div>
+        }
+    </div>
+
+    <!-- 📚 Klasici -->
+    <h3 class="mt-4">📚 Klasici</h3>
+    <div class="book-slider d-flex flex-row overflow-auto">
+        @foreach (var book in Model.ClassicBooks)
+        {
+            <div class="book-card m-2 p-2 border rounded shadow-sm text-center" style="width: 150px;">
+                <img src="@book.CoverUrl" alt="@book.Title" class="img-fluid" style="height: 200px; object-fit: cover;" />
+                <h5 class="mt-2">@book.Title</h5>
+                <p class="text-muted">@book.Author</p>
+                <button class="btn btn-primary btn-sm">Read</button>
+            </div>
+        }
+    </div>
+
+    <!-- ❤️ Knjige koje volimo -->
+    <h3 class="mt-4">❤️ Knjige koje volimo</h3>
+    <div class="book-slider d-flex flex-row overflow-auto">
+        @foreach (var book in Model.FavoriteBooks)
+        {
+            <div class="book-card m-2 p-2 border rounded shadow-sm text-center" style="width: 150px;">
+                <img src="@book.CoverUrl" alt="@book.Title" class="img-fluid" style="height: 200px; object-fit: cover;" />
+                <h5 class="mt-2">@book.Title</h5>
+                <p class="text-muted">@book.Author</p>
+                <button class="btn btn-success btn-sm">Borrow</button>
+            </div>
+        }
+    </div>
+</div>

@@ -11,6 +11,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages(); // ✅ Ovo registrira Razor Pages, potrebno za ASP.NET Identity
 builder.Services.AddHttpClient<OpenLibraryService>();
 builder.Services.AddHttpClient<OpenLibraryAuthorService>();
+builder.Services.AddHttpClient();
+
 
 
 

@@ -82,4 +82,18 @@
         <a asp-action="Create" class="btn btn-success">➕ Dodaj novu knjigu</a>
         <p class="alert alert-info mb-0">ℹ️ Sva posudba knjiga ograničena je na maksimalno 30 dana.</p>
     </div>
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+<!-- ✅ Gumb za uvoz 30 knjiga -->
+<form asp-controller="OpenLibrary" asp-action="ImportBooks" method="post">
+    <button type="submit" class="btn btn-primary mt-3">📥 Uvezi 30 knjiga</button>
+</form>
+
 </div>

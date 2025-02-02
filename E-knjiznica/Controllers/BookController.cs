@@ -20,7 +20,9 @@ namespace E_knjiznica.Controllers
         {
             try
             {
-                var books = _context.Books.AsQueryable();
+                var books = _context.Books
+                    .Include(b => b.Author)
+                    .AsQueryable();
 
                 if (!string.IsNullOrEmpty(searchTitle))
                     books = books.Where(b => b.Title.Contains(searchTitle));
@@ -34,7 +36,21 @@ namespace E_knjiznica.Controllers
                 if (searchYear.HasValue)
                     books = books.Where(b => b.PublishedYear == searchYear.Value.ToString());
 
-                return View(await books.ToListAsync());
+                var result = await books
+                    .Select(b => new Book
+                    {
+                        Id = b.Id,
+                        Title = b.Title,
+                        Author = b.Author,
+                        Genre = b.Genre,
+                        PublishedYear = b.PublishedYear,
+                        BorrowedDate = b.BorrowedDate ?? new DateTime(1753, 1, 1),
+                        ReturnDate = b.ReturnDate ?? new DateTime(1753, 1, 1),
+                        IsBorrowed = b.IsBorrowed
+                    })
+                    .ToListAsync();
+
+                return View(result);
             }
             catch (Exception ex)
             {
@@ -86,9 +102,8 @@ namespace E_knjiznica.Controllers
             }
 
             book.IsBorrowed = false;
-            book.BorrowedDate = null;
-            book.BorrowedByUserId = null;
-            book.ReturnDate = null;
+            book.BorrowedDate = new DateTime(1753, 1, 1);
+            book.ReturnDate = new DateTime(1753, 1, 1);
 
             await _context.SaveChangesAsync();
 

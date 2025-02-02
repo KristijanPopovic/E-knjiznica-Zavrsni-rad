@@ -21,10 +21,10 @@ namespace E_knjiznica.Models
 
         [Required]
         [DataType(DataType.Date)]
-        public DateTime? BorrowedDate { get; set; } // Datum kada je knjiga posuđena
+        public DateTime? BorrowedDate { get; set; } = new DateTime(1753, 1, 1); // Datum kada je knjiga posuđena
 
         [DataType(DataType.Date)]
-        public DateTime? ReturnDate { get; set; } // Datum povrata
+        public DateTime? ReturnDate { get; set; } = new DateTime(1753, 1, 1); // Datum povrata
 
         public bool IsBorrowed { get; set; } = false; // Oznaka je li knjiga posuđena
 
