@@ -1,0 +1,47 @@
+﻿@model E_knjiznica.Models.HomeViewModel
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-center">📚 Najpopularnije knjige</h2>
+    <div class="row">
+        @foreach (var book in Model.PopularBooks)
+        {
+            <div class="col-md-2 text-center book-card">
+                <img src="@book.CoverUrl" class="img-fluid" alt="@book.Title" />
+                <h5>@book.Title</h5>
+                <p>@book.Author?.Name</p>
+
+                @if (book.IsBorrowed != true)
+                {
+                    <button class="btn btn-primary">📚 Posudi</button>
+                }
+                else
+                {
+                    <button class="btn btn-secondary" disabled>❌ Nije dostupno</button>
+                }
+
+            </div>
+        }
+    </div>
+
+    <h2 class="mb-4 text-center">📚 Klasici</h2>
+    <div class="row">
+        @foreach (var book in Model.ClassicBooks)
+        {
+            <div class="col-md-2 text-center book-card">
+                <img src="@book.CoverUrl" class="img-fluid" alt="@book.Title" />
+                <h5>@book.Title</h5>
+                <p>@book.Author?.Name</p>
+
+                @if (book.IsBorrowed != true)
+                {
+                    <button class="btn btn-primary">📚 Posudi</button>
+                }
+                else
+                {
+                    <button class="btn btn-secondary" disabled>❌ Nije dostupno</button>
+                }
+
+            </div>
+        }
+    </div>
+</div>

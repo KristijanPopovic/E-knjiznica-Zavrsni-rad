@@ -37,17 +37,18 @@ namespace E_knjiznica.Controllers
                     books = books.Where(b => b.PublishedYear == searchYear.Value.ToString());
 
                 var result = await books
-                    .Select(b => new Book
-                    {
-                        Id = b.Id,
-                        Title = b.Title,
-                        Author = b.Author,
-                        Genre = b.Genre,
-                        PublishedYear = b.PublishedYear,
-                        BorrowedDate = b.BorrowedDate ?? new DateTime(1753, 1, 1),
-                        ReturnDate = b.ReturnDate ?? new DateTime(1753, 1, 1),
-                        IsBorrowed = b.IsBorrowed
-                    })
+    .Select(b => new Book
+    {
+        Id = b.Id,
+        Title = b.Title,
+        Author = b.Author,
+        Genre = b.Genre,
+        PublishedYear = b.PublishedYear,
+        BorrowedDate = b.BorrowedDate.HasValue ? b.BorrowedDate : null,
+        ReturnDate = b.ReturnDate.HasValue ? b.ReturnDate : null,
+        IsBorrowed = b.IsBorrowed
+    })
+
                     .ToListAsync();
 
                 return View(result);
