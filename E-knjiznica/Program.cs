@@ -1,4 +1,5 @@
 ﻿using E_knjiznica.Data;
+using E_knjiznica.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Dodaj usluge u aplikaciju
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages(); // ✅ Ovo registrira Razor Pages, potrebno za ASP.NET Identity
+builder.Services.AddHttpClient<OpenLibraryService>();
+
 
 
 // Konfiguracija baze podataka

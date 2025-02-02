@@ -1,0 +1,40 @@
+﻿@model List<E_knjiznica.Models.API.OpenLibraryBook>
+
+<h2>🔍 Pretraži knjige (Open Library)</h2>
+
+<!-- Forma za unos pojma za pretragu -->
+<form method="post" class="mb-3">
+    <input type="text" name="query" class="form-control" placeholder="Unesite naslov knjige ili autora" required />
+    <button type="submit" class="btn btn-primary mt-2">Pretraži</button>
+</form>
+
+<!-- Poruka o grešci ako nije unesen pojam -->
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+}
+
+<!-- Prikaz rezultata pretrage -->
+@if (Model != null && Model.Any())
+{
+    <h3>📚 Rezultati pretrage:</h3>
+    <div class="row">
+        @foreach (var book in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <img src="@book.CoverUrl" class="card-img-top" alt="Naslovnica" style="height: 300px; object-fit: cover;" />
+                    <div class="card-body">
+                        <h5 class="card-title">@book.Title</h5>
+                        <p class="card-text"><strong>Autor:</strong> @book.AuthorName</p>
+                        <p class="card-text"><strong>Godina:</strong> @book.FirstPublishYear</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else if (Model != null)
+{
+    <p>❌ Nema rezultata za ovu pretragu.</p>
+}
