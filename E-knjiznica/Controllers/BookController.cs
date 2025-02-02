@@ -26,7 +26,8 @@ namespace E_knjiznica.Controllers
                     books = books.Where(b => b.Title.Contains(searchTitle));
 
                 if (!string.IsNullOrEmpty(searchAuthor))
-                    books = books.Where(b => b.Author.Contains(searchAuthor));
+                    books = books.Where(b => b.Author != null && b.Author.Name.Contains(searchAuthor));
+
 
                 if (!string.IsNullOrEmpty(searchGenre))
                     books = books.Where(b => b.Genre.Contains(searchGenre));
@@ -45,6 +46,15 @@ namespace E_knjiznica.Controllers
                         Console.WriteLine($"Knjiga s ID: {book.Id} ima NULL za ReturnDate.");
                     }
                 }
+                try
+                {
+                    return View(await books.ToListAsync());
+                }
+                catch (Exception ex)
+                {
+                    return Content($"Greška prilikom učitavanja podataka: {ex.Message}\n\n📋 Detalji: {ex.StackTrace}");
+                }
+
 
                 return View(await books.ToListAsync());
             }

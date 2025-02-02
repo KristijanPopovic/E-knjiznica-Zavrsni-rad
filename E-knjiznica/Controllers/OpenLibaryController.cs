@@ -48,11 +48,18 @@ namespace E_knjiznica.Controllers
             {
                 return Content("❌ Greška: Naslov i autor su obavezni.");
             }
+            var existingAuthor = _context.Authors.FirstOrDefault(a => a.Name == author);
+            if (existingAuthor == null)
+            {
+                existingAuthor = new Author { Name = author };
+                _context.Authors.Add(existingAuthor);
+                await _context.SaveChangesAsync();
+            }
 
             var book = new Book
             {
                 Title = title ?? "Nepoznato",
-                Author = author ?? "Nepoznato",
+                Author = existingAuthor, // ✅ Ispravno
                 PublishedYear = !string.IsNullOrEmpty(publishedYear) ? publishedYear : "Nepoznato",
                 CoverUrl = !string.IsNullOrEmpty(coverUrl) ? coverUrl : "default_cover.jpg",
                 Genre = !string.IsNullOrEmpty(genre) ? genre : "Nepoznat žanr",

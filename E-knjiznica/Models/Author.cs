@@ -23,6 +23,7 @@ namespace E_knjiznica.Models
         public DateTime? DeathDate { get; set; }  // Datum smrti (opcionalno)
 
         public string? PhotoUrl { get; set; }  // URL slike autora (opcionalno)
+        public string OpenLibraryId { get; set; } // ✅ ID autora s Open Library API-ja
 
         // ✅ Povezivanje autora s knjigama
         public List<Book> Books { get; set; } = new List<Book>();

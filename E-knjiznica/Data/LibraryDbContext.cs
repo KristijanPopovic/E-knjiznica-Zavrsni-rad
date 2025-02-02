@@ -11,6 +11,8 @@ namespace E_knjiznica.Data
 
         public DbSet<Book> Books { get; set; }
         public DbSet<Review> Reviews { get; set; }
+        public DbSet<Author> Authors { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -21,6 +23,11 @@ namespace E_knjiznica.Data
                 .HasOne<IdentityUser>(b => b.BorrowedByUser)
                 .WithMany()
                 .HasForeignKey(b => b.BorrowedByUserId);
+            modelBuilder.Entity<Author>()
+                .HasMany(a => a.Books)
+                .WithOne(b => b.Author)
+    .HasForeignKey(b => b.AuthorId);
+
         }
     }
 }
