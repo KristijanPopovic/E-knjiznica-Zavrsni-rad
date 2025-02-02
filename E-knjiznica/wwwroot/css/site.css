@@ -1,22 +1,113 @@
+﻿/* 🎯 Originalni stilovi */
 html {
-  font-size: 14px;
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+}
+
+/* 🎨 Novi stilovi za moderan izgled */
+/* ✅ Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8f9fa; /* Svijetla pozadina */
+    color: #212529; /* Tamnija boja teksta */
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+/* ✅ Naslovi */
+h1, h2, h3 {
+    color: #343a40;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+/* ✅ Gumbi */
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    transition: background-color 0.3s;
+}
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        color: white;
+    }
+
+/* ✅ Kartice za knjige */
+.card {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+/* ✅ Navigacija */
+.navbar {
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 10px 20px;
+}
+
+.nav-link {
+    color: #007bff !important;
+    font-weight: 500;
+    margin-right: 15px;
+}
+
+    .nav-link:hover {
+        color: #0056b3 !important;
+        text-decoration: underline;
+    }
+
+/* ✅ Tablica */
+.table {
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+    .table th {
+        background-color: #007bff;
+        color: white;
+        text-align: center;
+    }
+
+    .table td {
+        text-align: center;
+        padding: 12px;
+        vertical-align: middle;
+    }
+
+/* ✅ Responsivnost */
+@media (max-width: 768px) {
+    .table th, .table td {
+        font-size: 14px;
+        padding: 8px;
+    }
 }

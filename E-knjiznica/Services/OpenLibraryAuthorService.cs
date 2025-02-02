@@ -24,7 +24,7 @@ namespace E_knjiznica.Services
             {
                 var json = await response.Content.ReadAsStringAsync();
                 var author = JsonConvert.DeserializeObject<Author>(json);
-                return author;
+                return author ?? new Author();  // ✅ Sprječavanje null reference errora
             }
 
             return null; // Ako nije uspješno, vraćamo null
