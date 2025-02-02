@@ -42,6 +42,7 @@ namespace E_knjiznica.Controllers
                 _context.Authors.Add(author);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
+
             }
             return View(author);
         }
@@ -60,6 +61,8 @@ namespace E_knjiznica.Controllers
             var biography = await _authorService.GetAuthorBiographyAsync(author.OpenLibraryId);
 
             ViewBag.Biography = biography;
+            var books = await _authorService.GetAuthorBooksAsync(author.OpenLibraryId);
+            ViewBag.Books = books;
 
             return View(author);
         }

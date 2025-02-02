@@ -10,4 +10,12 @@
     {
         <li>@book.Title (@book.PublishedYear)</li>
     }
+    <h3>Djela autora</h3>
+    <ul>
+        @foreach (var book in ViewBag.Books)
+        {
+            <li>@book</li>
+        }
+    </ul>
+
 </ul>

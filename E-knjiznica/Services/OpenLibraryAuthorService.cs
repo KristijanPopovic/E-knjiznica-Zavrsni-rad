@@ -1,8 +1,7 @@
 ﻿using System.Net.Http;
-using System.Text.Json;
 using System.Threading.Tasks;
 using E_knjiznica.Models;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace E_knjiznica.Services
 {
@@ -24,10 +23,7 @@ namespace E_knjiznica.Services
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
-                var author = JsonSerializer.Deserialize<Author>(json, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
+                var author = JsonConvert.DeserializeObject<Author>(json);
                 return author;
             }
 
@@ -43,10 +39,7 @@ namespace E_knjiznica.Services
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
-                var result = JsonSerializer.Deserialize<OpenLibraryWorksResponse>(json, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
+                var result = JsonConvert.DeserializeObject<OpenLibraryWorksResponse>(json);
 
                 // Pretvaranje rezultata u listu knjiga
                 return result.Entries.Select(work => new Book
@@ -59,33 +52,57 @@ namespace E_knjiznica.Services
 
             return new List<Book>(); // Ako nema rezultata, vraćamo praznu listu
         }
-        // ✅ Dohvaćanje detalja o autoru
+
+        // ✅ Dohvaćanje biografije autora
         public async Task<string> GetAuthorBiographyAsync(string openLibraryId)
         {
-            try
-            {
-                var url = $"https://openlibrary.org/authors/{openLibraryId}.json";
-                var response = await _httpClient.GetStringAsync(url);
+            var response = await _httpClient.GetAsync($"https://openlibrary.org/authors/{openLibraryId}.json");
 
-                var json = JObject.Parse(response);
-                return json["bio"]?.ToString() ?? "Biografija nije dostupna.";
-            }
-            catch
+            if (response.IsSuccessStatusCode)
             {
-                return "Biografija nije dostupna.";
+                var json = await response.Content.ReadAsStringAsync();
+                dynamic data = JsonConvert.DeserializeObject(json);
+                return data?.bio?.ToString() ?? "Biografija nije dostupna.";
             }
+            return "Biografija nije dostupna.";
+        }
+
+        // ✅ Dohvaćanje popisa knjiga autora
+        public async Task<List<string>> GetAuthorBooksAsync(string openLibraryId)
+        {
+            var response = await _httpClient.GetAsync($"https://openlibrary.org/authors/{openLibraryId}/works.json");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                dynamic data = JsonConvert.DeserializeObject(json);
+                var books = new List<string>();
+
+                foreach (var work in data.entries)
+                {
+                    books.Add((string)work.title);
+                }
+                return books;
+            }
+            return new List<string> { "Nema dostupnih knjiga." };
         }
 
         // ✅ Model za parsiranje API odgovora
         public class OpenLibraryWorksResponse
         {
+            [JsonProperty("entries")]
             public List<OpenLibraryWork> Entries { get; set; }
         }
 
         public class OpenLibraryWork
         {
+            [JsonProperty("title")]
             public string Title { get; set; }
+
+            [JsonProperty("first_publish_date")]
             public string FirstPublishDate { get; set; }
+
+            [JsonProperty("cover_id")]
             public int? CoverId { get; set; }
         }
     }
