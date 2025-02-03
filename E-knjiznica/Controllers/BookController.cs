@@ -130,6 +130,7 @@ namespace E_knjiznica.Controllers
 
         public async Task<IActionResult> DueSoon()
         {
+            var userId = _userManager.GetUserId(User); // ✅ Filtriranje po trenutnom korisniku
             var today = DateTime.Now;
             var dueSoonBooks = await _context.Books.Where(b => b.IsBorrowed && b.ReturnDate.HasValue && b.ReturnDate.Value <= today.AddDays(3)).ToListAsync();
             return View(dueSoonBooks);
