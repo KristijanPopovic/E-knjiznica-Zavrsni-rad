@@ -20,12 +20,13 @@ namespace E_knjiznica.Controllers
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> Index(string searchTitle, string searchAuthor, string searchGenre, int? searchYear)
+        public async Task<IActionResult> Index(string searchTitle, string searchAuthor, string searchGenre, int? searchYear, string sortTitle, string sortAuthor, string sortGenre)
         {
             try
             {
                 var books = _context.Books.Include(b => b.Author).AsQueryable();
 
+                // 🔍 Filtriranje
                 if (!string.IsNullOrEmpty(searchTitle))
                     books = books.Where(b => b.Title.Contains(searchTitle));
 
@@ -38,8 +39,15 @@ namespace E_knjiznica.Controllers
                 if (searchYear.HasValue)
                     books = books.Where(b => b.PublishedYear == searchYear.Value.ToString());
 
-                var result = await books.ToListAsync();
-                return View(result);
+                // 🔽 Sortiranje
+                if (sortTitle == "asc") books = books.OrderBy(b => b.Title);
+                if (sortTitle == "desc") books = books.OrderByDescending(b => b.Title);
+                if (sortAuthor == "asc") books = books.OrderBy(b => b.Author.Name);
+                if (sortAuthor == "desc") books = books.OrderByDescending(b => b.Author.Name);
+                if (sortGenre == "asc") books = books.OrderBy(b => b.Genre);
+                if (sortGenre == "desc") books = books.OrderByDescending(b => b.Genre);
+
+                return View(await books.ToListAsync());
             }
             catch (Exception ex)
             {
@@ -47,10 +55,7 @@ namespace E_knjiznica.Controllers
             }
         }
 
-        public IActionResult Create()
-        {
-            return View();
-        }
+        public IActionResult Create() => View();
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -70,19 +75,16 @@ namespace E_knjiznica.Controllers
         {
             var book = await _context.Books.FindAsync(id);
             if (book == null || book.IsBorrowed)
-            {
                 return NotFound();
-            }
 
-            var userId = _userManager.GetUserId(User); // ✅ Dohvaćanje ID-a korisnika
+            var userId = _userManager.GetUserId(User);
 
             book.IsBorrowed = true;
             book.BorrowedDate = DateTime.Now;
-            book.ReturnDate = DateTime.Now.AddDays(14); // Posudba na 14 dana
-            book.BorrowedByUserId = userId; // ✅ Postavljanje korisnika koji je posudio knjigu
+            book.ReturnDate = DateTime.Now.AddDays(14);
+            book.BorrowedByUserId = userId;
 
             await _context.SaveChangesAsync();
-
             return RedirectToAction("Index");
         }
 
@@ -90,9 +92,7 @@ namespace E_knjiznica.Controllers
         {
             var book = await _context.Books.FindAsync(id);
             if (book == null || !book.IsBorrowed)
-            {
                 return NotFound();
-            }
 
             book.IsBorrowed = false;
             book.BorrowedDate = null;
@@ -100,17 +100,15 @@ namespace E_knjiznica.Controllers
             book.BorrowedByUserId = null;
 
             await _context.SaveChangesAsync();
-
             return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> SavedBooks()
         {
             var userId = _userManager.GetUserId(User);
-
             var books = await _context.Books
                 .Where(b => b.IsBorrowed && b.BorrowedByUserId == userId)
-                .Include(b => b.Author) // ✅ Dodano kako bi prikazali podatke o autoru
+                .Include(b => b.Author)
                 .ToListAsync();
 
             return View(books);
@@ -130,9 +128,12 @@ namespace E_knjiznica.Controllers
 
         public async Task<IActionResult> DueSoon()
         {
-            var userId = _userManager.GetUserId(User); // ✅ Filtriranje po trenutnom korisniku
+            var userId = _userManager.GetUserId(User);
             var today = DateTime.Now;
-            var dueSoonBooks = await _context.Books.Where(b => b.IsBorrowed && b.ReturnDate.HasValue && b.ReturnDate.Value <= today.AddDays(3)).ToListAsync();
+            var dueSoonBooks = await _context.Books
+                .Where(b => b.IsBorrowed && b.ReturnDate.HasValue && b.ReturnDate.Value <= today.AddDays(3))
+                .ToListAsync();
+
             return View(dueSoonBooks);
         }
 
@@ -140,26 +141,21 @@ namespace E_knjiznica.Controllers
         {
             var book = await _context.Books.FindAsync(id);
             if (book == null)
-            {
                 return NotFound();
-            }
 
-            var dueDate = book.ReturnDate ?? DateTime.Now.AddDays(14);
             return View(book);
         }
+
         [Authorize]
         public async Task<IActionResult> MyLibrary()
         {
-            var userId = _userManager.GetUserId(User); // ✅ Dohvaćanje ID-a trenutno prijavljenog korisnika
-
+            var userId = _userManager.GetUserId(User);
             var borrowedBooks = await _context.Books
-                .Include(b => b.Author) // Uključuje podatke o autoru
+                .Include(b => b.Author)
                 .Where(b => b.IsBorrowed && b.BorrowedByUserId == userId)
                 .ToListAsync();
 
             return View(borrowedBooks);
         }
-
-
     }
 }

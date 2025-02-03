@@ -8,12 +8,27 @@
         <div class="row g-2">
             <div class="col-md-3">
                 <input type="text" name="searchTitle" class="form-control" placeholder="Pretraži po naslovu" value='@Context.Request.Query["searchTitle"]' />
+                <select name="sortTitle" class="form-control mt-1">
+                    <option value="">Sortiraj po naslovu</option>
+                    <option value="asc">A - Ž</option>
+                    <option value="desc">Ž - A</option>
+                </select>
             </div>
             <div class="col-md-3">
                 <input type="text" name="searchAuthor" class="form-control" placeholder="Pretraži po autoru" value='@Context.Request.Query["searchAuthor"]' />
+                <select name="sortAuthor" class="form-control mt-1">
+                    <option value="">Sortiraj po autoru</option>
+                    <option value="asc">A - Ž</option>
+                    <option value="desc">Ž - A</option>
+                </select>
             </div>
             <div class="col-md-3">
                 <input type="text" name="searchGenre" class="form-control" placeholder="Pretraži po žanru" value='@Context.Request.Query["searchGenre"]' />
+                <select name="sortGenre" class="form-control mt-1">
+                    <option value="">Sortiraj po žanru</option>
+                    <option value="asc">A - Ž</option>
+                    <option value="desc">Ž - A</option>
+                </select>
             </div>
             <div class="col-md-2">
                 <input type="number" name="searchYear" class="form-control" placeholder="Godina izdavanja" value='@Context.Request.Query["searchYear"]' />
