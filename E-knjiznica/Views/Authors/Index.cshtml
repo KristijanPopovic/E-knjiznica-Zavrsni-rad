@@ -1,0 +1,31 @@
+﻿@model IEnumerable<E_knjiznica.Models.Author>
+
+<h2>📚 Popis autora</h2>
+
+<!-- ✅ Gumb za dodavanje novog autora -->
+<a asp-action="Create" class="btn btn-success mb-3">➕ Dodaj novog autora</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Ime autora</th>
+            <th>Biografija</th>
+            <th>Akcije</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var author in Model)
+        {
+            <tr>
+                <td>@author.Name</td>
+                <td>@(string.IsNullOrEmpty(author.Biography) ? "Nema biografije" : author.Biography.Substring(0, Math.Min(50, author.Biography.Length)) + "...")</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@author.Id" class="btn btn-info">Detalji</a>
+                    <form asp-action="Delete" asp-route-id="@author.Id" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger">🗑️ Obriši</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

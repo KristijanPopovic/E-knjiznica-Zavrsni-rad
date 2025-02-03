@@ -1,0 +1,29 @@
+﻿@model IEnumerable<E_knjiznica.Models.Book>
+
+<h2>📚 Moje posuđene knjige</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Naslov</th>
+            <th>Autor</th>
+            <th>Žanr</th>
+            <th>Datum posudbe</th>
+            <th>Akcije</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var book in Model)
+        {
+            <tr>
+                <td>@book.Title</td>
+                <td>@book.Author</td>
+                <td>@book.Genre</td>
+                <td>@book.BorrowedDate?.ToShortDateString()</td>
+                <td>
+                    <a asp-action="Return" asp-route-id="@book.Id" class="btn btn-success">🔄 Vrati</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

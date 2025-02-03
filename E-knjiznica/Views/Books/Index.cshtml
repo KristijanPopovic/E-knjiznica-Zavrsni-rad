@@ -1,0 +1,59 @@
+﻿@model IEnumerable<E_knjiznica.Models.Book>
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-center">📚 Popis knjiga</h2>
+
+    <!-- 🔍 Pretraga -->
+    <form method="get" class="mb-4">
+        <div class="row g-2">
+            <div class="col-md-3">
+                <input type="text" name="searchTitle" class="form-control" placeholder="Pretraži po naslovu" value='@Context.Request.Query["searchTitle"]' />
+            </div>
+            <div class="col-md-3">
+                <input type="text" name="searchAuthor" class="form-control" placeholder="Pretraži po autoru" value='@Context.Request.Query["searchAuthor"]' />
+            </div>
+            <div class="col-md-3">
+                <input type="text" name="searchGenre" class="form-control" placeholder="Pretraži po žanru" value='@Context.Request.Query["searchGenre"]' />
+            </div>
+            <div class="col-md-2">
+                <input type="number" name="searchYear" class="form-control" placeholder="Godina izdavanja" value='@Context.Request.Query["searchYear"]' />
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-primary w-100">🔎 Traži</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- 📚 Prikaz knjiga kao kartice -->
+    <div class="row row-cols-1 row-cols-md-4 g-4">
+        @foreach (var book in Model)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img src="@book.CoverUrl" class="card-img-top" alt="Naslovnica" style="height: 250px; object-fit: cover;" />
+                    <div class="card-body">
+                        <h5 class="card-title">@book.Title</h5>
+                        <p class="card-text"><strong>Autor:</strong> @(book.Author?.Name ?? "Nepoznato")</p>
+                        <p class="card-text"><strong>Žanr:</strong> @(book.Genre ?? "Nepoznato")</p>
+                        <p class="card-text"><strong>Izdano:</strong> @(string.IsNullOrEmpty(book.PublishedYear) ? "-" : book.PublishedYear)</p>
+                    </div>
+                    <div class="card-footer text-center">
+                        @if (book.IsBorrowed)
+                        {
+                            <button class="btn btn-secondary btn-sm" disabled>📖 Posuđeno</button>
+                            <form asp-action="Return" asp-route-id="@book.Id" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-success btn-sm mt-2">🔄 Vrati</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-action="Borrow" asp-route-id="@book.Id" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-warning btn-sm">📖 Posudi</button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

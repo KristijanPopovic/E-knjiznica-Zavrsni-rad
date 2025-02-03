@@ -1,0 +1,21 @@
+﻿<h2>@Model.Name</h2>
+
+<!-- ✅ Prikaz biografije -->
+<h4>Biografija</h4>
+<p>@ViewBag.Biography</p>
+
+<h4>Djela</h4>
+<ul>
+    @foreach (var book in Model.Books)
+    {
+        <li>@book.Title (@book.PublishedYear)</li>
+    }
+    <h3>Djela autora</h3>
+    <ul>
+        @foreach (var book in ViewBag.Books)
+        {
+            <li>@book</li>
+        }
+    </ul>
+
+</ul>

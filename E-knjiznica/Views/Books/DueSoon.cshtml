@@ -1,0 +1,32 @@
+﻿@model IEnumerable<E_knjiznica.Models.Book>
+
+<h2>⏰ Knjige koje su uskoro za vratiti</h2>
+
+@if (Model.Any())
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Naslov</th>
+                <th>Datum posudbe</th>
+                <th>Datum povrata</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var book in Model)
+            {
+                <tr>
+                    <td>@book.Title</td>
+                    <td>@book.BorrowedDate?.ToShortDateString()</td>
+                    <td>@book.ReturnDate?.ToShortDateString()</td>
+                    <td>Uskoro za vratiti ⏳</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>🎉 Trenutno nema knjiga koje trebate vratiti uskoro.</p>
+}

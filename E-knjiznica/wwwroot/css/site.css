@@ -1,22 +1,251 @@
+﻿/* 🎯 Originalni stilovi */
 html {
-  font-size: 14px;
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
+    background-image: url('/images/slika.jfif'); /* ✅ Dodana pozadina za cijelu stranicu */
+    background-size: 300px 300px; /* ✅ Veličina kvadratića */
+    background-repeat: repeat; /* ✅ Ponavljanje slike */
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+    padding: 10px; /* ✅ Dodan padding za bolje margine */
+    background: transparent; /* ✅ Pozadina tijela prozirna da se vidi slika */
+}
+
+/* 🎨 Novi stilovi za moderan izgled */
+/* ✅ Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+    color: #343a40; /* Lagano tamnija boja teksta */
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* ✅ Naslovi */
+h1, h2, h3 {
+    color: #343a40;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+/* ✅ Gumbi */
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    transition: background-color 0.3s;
+}
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        color: white;
+    }
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+}
+
+/* ✅ Kartice za knjige */
+.card {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+    overflow: hidden;
+}
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+.card-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.card-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+/* ✅ Navigacija */
+.navbar {
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 10px 20px;
+}
+
+.nav-link {
+    color: #007bff !important;
+    font-weight: 500;
+    margin-right: 15px;
+    transition: color 0.3s;
+}
+
+    .nav-link:hover {
+        color: #0056b3 !important;
+        text-decoration: underline;
+    }
+
+    /* ✅ Istaknuta aktivna stavka u navigaciji */
+    .nav-link.active {
+        font-weight: bold;
+        color: #0056b3 !important;
+        border-bottom: 2px solid #007bff;
+    }
+
+/* ✅ Tablica */
+.table {
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+    .table th {
+        background-color: #007bff;
+        color: white;
+        text-align: center;
+    }
+
+    .table td {
+        text-align: center;
+        padding: 12px;
+        vertical-align: middle;
+    }
+
+    /* ✅ Hover efekt na redove tablice */
+    .table tbody tr:hover {
+        background-color: #f1f9ff;
+        transition: background-color 0.3s ease;
+    }
+
+/* ✅ Responsivnost */
+@media (max-width: 768px) {
+    .table th, .table td {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    .navbar-brand {
+        font-size: 1.5rem;
+        color: #007bff !important;
+    }
+
+    .nav-link {
+        color: #212529 !important;
+        font-weight: 500;
+    }
+
+        .nav-link:hover {
+            color: #007bff !important;
+            text-decoration: underline;
+        }
+
+    .nav-item i {
+        margin-right: 6px;
+    }
+
+    footer {
+        background-color: #f8f9fa;
+        padding: 15px 0;
+        font-size: 14px;
+        color: #6c757d;
+    }
+
+    .card-title {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    .text-warning {
+        color: #ffc107 !important;
+    }
+
+    .text-secondary {
+        color: #e0e0e0 !important;
+    }
+
+    .book-slider {
+        display: flex;
+        overflow-x: auto;
+        gap: 15px;
+        padding: 10px;
+        scroll-behavior: smooth;
+    }
+
+    .book-card {
+        min-width: 150px;
+        background: white;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        transition: transform 0.3s;
+    }
+
+        .book-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .book-card:hover {
+            transform: scale(1.05);
+        }
+
+        .book-card h5 {
+            font-size: 1rem;
+            margin: 10px 0 5px;
+        }
+
+        .book-card p {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+    .card {
+        border-radius: 10px;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+    .card-img-top {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    .card-footer {
+        background-color: #f8f9fa;
+        border-top: none;
+    }
+
+    .card-title, .card-text {
+        color: #333;
+    }
 }
