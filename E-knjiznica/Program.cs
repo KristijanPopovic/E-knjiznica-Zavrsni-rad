@@ -1,39 +1,43 @@
 ﻿using E_knjiznica.Data;
-using E_knjiznica.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Dodavanje usluga
-builder.Services.AddControllersWithViews();
-builder.Services.AddRazorPages();
-builder.Services.AddHttpClient<OpenLibraryService>();
-builder.Services.AddHttpClient<OpenLibraryAuthorService>();
-builder.Services.AddHttpClient();
-
-// Konfiguracija baze podataka
+// ✅ Konfiguracija baze podataka
 builder.Services.AddDbContext<LibraryDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // ✅ Dodavanje ASP.NET Identity
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 {
-    options.SignIn.RequireConfirmedAccount = false;  // Nema potrebe za potvrdom računa
+    options.SignIn.RequireConfirmedAccount = false;
 })
 .AddEntityFrameworkStores<LibraryDbContext>()
 .AddDefaultTokenProviders();
 
-// ✅ Konfiguracija kolačića za prijavu
+// ✅ Konfiguracija kolačića
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath = "/Account/Login"; // Putanja za prijavu
-    options.AccessDeniedPath = "/Account/AccessDenied"; // Putanja za odbijen pristup
+    options.LoginPath = "/Account/Login";
+    options.AccessDeniedPath = "/Account/AccessDenied";
 });
+
+// ✅ Globalna autorizacija
+builder.Services.AddControllersWithViews(options =>
+{
+    var policy = new AuthorizationPolicyBuilder()
+                     .RequireAuthenticatedUser()
+                     .Build();
+    options.Filters.Add(new AuthorizeFilter(policy));
+});
+
+builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
-// ✅ Middleware konfiguracija
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -46,21 +50,14 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// ✅ Definicija ruta
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Books}/{action=Index}/{id?}");
-
-app.MapRazorPages();
-
-// ✅ Inicijalizacija admin korisnika i uloga
+// ✅ Inicijalizacija admin korisnika
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-    // Kreiranje uloga ako ne postoje
+    // Kreiranje uloga
     string[] roles = { "Admin", "User" };
     foreach (var role in roles)
     {
@@ -84,10 +81,12 @@ using (var scope = app.Services.CreateScope())
             await userManager.AddToRoleAsync(adminUser, "Admin");
         }
     }
-    app.MapControllerRoute(
+}
+
+// ✅ Prva stranica -> Login
+app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Account}/{action=Login}/{id?}");
 
-}
-
+app.MapRazorPages();
 app.Run();

@@ -4,49 +4,54 @@ using E_knjiznica.Models;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 
-public class AccountController : Controller
+namespace E_knjiznica.Controllers
 {
-    private readonly UserManager<IdentityUser> _userManager;
-    private readonly SignInManager<IdentityUser> _signInManager;
-
-    public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+    public class AccountController : Controller
     {
-        _userManager = userManager;
-        _signInManager = signInManager;
-    }
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
 
-    public IActionResult Login() => View();
-
-    [HttpPost]
-    public async Task<IActionResult> Login(LoginViewModel model)
-    {
-        if (ModelState.IsValid)
+        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
         {
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user != null)
-            {
-                var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
-                if (result.Succeeded)
-                {
-                    if (await _userManager.IsInRoleAsync(user, "Admin"))
-                        return RedirectToAction("AdminDashboard", "Home");
-
-                    return RedirectToAction("UserDashboard", "Home");
-                }
-            }
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
-        ModelState.AddModelError("", "Neispravni podaci.");
-        return View(model);
-    }
 
-    public async Task<IActionResult> Logout()
-    {
-        await _signInManager.SignOutAsync();
-        return RedirectToAction("Login");
-    }
-    [Authorize(Roles = "Admin")]
-    public IActionResult AdminDashboard() => View();
+        [AllowAnonymous]
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
 
-    [Authorize(Roles = "User,Admin")]
-    public IActionResult UserDashboard() => View();
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user != null)
+                {
+                    var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, false, false);
+                    if (result.Succeeded)
+                    {
+                        var roles = await _userManager.GetRolesAsync(user);
+                        if (roles.Contains("Admin"))
+                            return RedirectToAction("Index", "Books");  // Admin dashboard
+                        else
+                            return RedirectToAction("MyBooks", "Books");  // User's borrowed books
+                    }
+                }
+                ModelState.AddModelError(string.Empty, "Pogrešan email ili lozinka.");
+            }
+            return View(model);
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Login");
+        }
+    }
 }
