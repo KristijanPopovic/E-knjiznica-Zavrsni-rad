@@ -29,6 +29,7 @@
             <thead class="table-dark">
                 <tr>
                     <th>Naslov</th>
+                    <th>Naslovnica</th> <!-- ✅ Dodano novo polje za sliku -->
                     <th>Autor</th>
                     <th>Žanr</th>
                     <th>Datum izdavanja</th>
@@ -42,6 +43,16 @@
                 {
                     <tr>
                         <td>@book.Title</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(book.CoverUrl))
+                            {
+                                <img src="@book.CoverUrl" alt="Naslovnica" style="width: 60px; height: auto;" /> <!-- ✅ Prikaz slike -->
+                            }
+                            else
+                            {
+                                <span class="text-muted">Nema slike</span>
+                            }
+                        </td>
                         <td>@(book.Author?.Name ?? "Nepoznato")</td>
                         <td>@(book.Genre ?? "Nepoznato")</td>
                         <td>@(string.IsNullOrEmpty(book.PublishedYear) ? "-" : book.PublishedYear)</td>
