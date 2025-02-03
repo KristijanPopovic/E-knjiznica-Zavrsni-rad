@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace E_knjiznica.Controllers
 {
@@ -68,22 +69,21 @@ namespace E_knjiznica.Controllers
         public async Task<IActionResult> Borrow(int id)
         {
             var book = await _context.Books.FindAsync(id);
-
-            if (book == null)
+            if (book == null || book.IsBorrowed)
             {
                 return NotFound();
             }
 
-            if (!book.IsBorrowed)
-            {
-                book.IsBorrowed = true;
-                book.BorrowedDate = DateTime.Now;
-                book.ReturnDate = DateTime.Now.AddDays(14);
+            var userId = _userManager.GetUserId(User); // ✅ Dohvaćanje ID-a korisnika
 
-                await _context.SaveChangesAsync();
-            }
+            book.IsBorrowed = true;
+            book.BorrowedDate = DateTime.Now;
+            book.ReturnDate = DateTime.Now.AddDays(14); // Posudba na 14 dana
+            book.BorrowedByUserId = userId; // ✅ Postavljanje korisnika koji je posudio knjigu
 
-            return RedirectToAction(nameof(Index));
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Return(int id)
@@ -141,5 +141,19 @@ namespace E_knjiznica.Controllers
             var dueDate = book.ReturnDate ?? DateTime.Now.AddDays(14);
             return View(book);
         }
+        [Authorize]
+        public async Task<IActionResult> MyLibrary()
+        {
+            var userId = _userManager.GetUserId(User); // ✅ Dohvaćanje ID-a trenutno prijavljenog korisnika
+
+            var borrowedBooks = await _context.Books
+                .Include(b => b.Author) // Uključuje podatke o autoru
+                .Where(b => b.IsBorrowed && b.BorrowedByUserId == userId)
+                .ToListAsync();
+
+            return View(borrowedBooks);
+        }
+
+
     }
 }

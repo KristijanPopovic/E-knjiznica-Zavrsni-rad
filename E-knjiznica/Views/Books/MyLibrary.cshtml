@@ -1,0 +1,45 @@
+﻿@model IEnumerable<E_knjiznica.Models.Book>
+
+<h2 class="text-center mb-4">📚 Moja knjižnica</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info text-center">Niste posudili nijednu knjigu.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>Naslov</th>
+                    <th>Autor</th>
+                    <th>Datum posudbe</th>
+                    <th>Datum povrata</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var book in Model)
+                {
+                    <tr>
+                        <td>@book.Title</td>
+                        <td>@(book.Author?.Name ?? "Nepoznato")</td>
+                        <td>@book.BorrowedDate?.ToString("dd.MM.yyyy")</td>
+                        <td>@book.ReturnDate?.ToString("dd.MM.yyyy")</td>
+                        <td>
+                            @if (book.IsBorrowed)
+                            {
+                                <span class="badge bg-warning text-dark">Posuđeno</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Vraćeno</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
