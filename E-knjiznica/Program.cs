@@ -107,6 +107,9 @@ using (var scope = app.Services.CreateScope())
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Account}/{action=Login}/{id?}");
+app.MapControllerRoute(
+    name: "openLibrary",
+    pattern: "{controller=OpenLibrary}/{action=Search}/{id?}");
 
 app.MapRazorPages();
 app.Run();

@@ -108,6 +108,7 @@ namespace E_knjiznica.Controllers
         {
             var userId = _userManager.GetUserId(User);
             var books = await _context.Books.Where(b => b.IsBorrowed && b.BorrowedByUserId == userId).ToListAsync();
+
             return View(books);
         }
 

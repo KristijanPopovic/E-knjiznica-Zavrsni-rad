@@ -1,27 +1,30 @@
 ﻿@model IEnumerable<E_knjiznica.Models.API.OpenLibraryBook>
 
+<h2>Rezultati pretraživanja</h2>
 
-<h2>📚 Rezultati pretrage</h2>
+<div class="row">
+    @foreach (var book in Model)
+    {
+        <div class="col-md-4">
+            <div class="card mb-3 shadow-sm">
+                <img src="https://covers.openlibrary.org/b/id/@(book.CoverId)-L.jpg" class="card-img-top" alt="Naslovnica" onerror="this.src='/images/default_cover.jpg';" />
+                <div class="card-body">
+                    <h5 class="card-title">@book.Title</h5>
+                    <p class="card-text">
+                        <strong>Autor:</strong> @(book.AuthorName ?? "Nepoznati autor")<br />
+                        <strong>Godina:</strong> @(book.FirstPublishYear ?? "Nepoznato")
+                    </p>
 
-@if (!Model.Any())
-{
-    <p>❌ Nema rezultata za pretragu.</p>
-}
-else
-{
-    <div class="row">
-        @foreach (var book in Model)
-        {
-            <div class="col-md-4 mb-3">
-                <div class="card">
-                    <img src="https://covers.openlibrary.org/b/id/@(book.CoverId)-L.jpg" class="card-img-top" alt="Naslovnica" />
-                    <div class="card-body">
-                        <h5 class="card-title">@book.Title</h5>
-                        <p class="card-text">✍️ @book.AuthorName</p>
-                        <p class="card-text">📅 Izdano: @book.FirstPublishYear</p>
-                    </div>
+                    <form asp-controller="OpenLibrary" asp-action="SaveBook" method="post">
+                        <input type="hidden" name="title" value="@book.Title" />
+                        <input type="hidden" name="author" value="@book.AuthorName" />
+                        <input type="hidden" name="publishedYear" value="@book.FirstPublishYear" />
+                        <input type="hidden" name="coverUrl" value="https://covers.openlibrary.org/b/id/@(book.CoverId)-L.jpg" />
+
+                        <button type="submit" class="btn btn-success btn-sm">📚 Dodaj u moju knjižnicu</button>
+                    </form>
                 </div>
             </div>
-        }
-    </div>
-}
+        </div>
+    }
+</div>

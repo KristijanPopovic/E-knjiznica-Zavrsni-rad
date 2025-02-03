@@ -35,11 +35,11 @@ namespace E_knjiznica.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> SaveBook(string title, string author, string publishedYear, string coverUrl, string genre)
+        public async Task<IActionResult> SaveBook(string title, string author, string publishedYear, string coverUrl)
         {
             if (string.IsNullOrEmpty(title) || string.IsNullOrEmpty(author))
             {
-                return Content("❌ Greška: Naslov i autor su obavezni.");
+                return Content("❌ Naslov i autor su obavezni.");
             }
 
             var existingAuthor = await _context.Authors.FirstOrDefaultAsync(a => a.Name == author);
@@ -57,18 +57,16 @@ namespace E_knjiznica.Controllers
                     Title = title,
                     Author = existingAuthor,
                     PublishedYear = publishedYear ?? "Nepoznato",
-                    CoverUrl = coverUrl ?? "default_cover.jpg",
-                    Genre = genre ?? "Nepoznat žanr",
-                    IsBorrowed = false,
-                    BorrowedDate = DateTime.Now,
-                    ReturnDate = DateTime.Now.AddDays(30)
+                    CoverUrl = coverUrl ?? "/images/default_cover.jpg",
+                    Genre = "Nepoznat žanr",
+                    IsBorrowed = false
                 };
 
                 _context.Books.Add(book);
                 await _context.SaveChangesAsync();
             }
 
-            return RedirectToAction("Index", "Books");
+            return RedirectToAction("SavedBooks", "Books"); // ✅ Nakon spremanja preusmjeri na Moja knjižnica
         }
 
         public async Task<IActionResult> ImportBooks()
