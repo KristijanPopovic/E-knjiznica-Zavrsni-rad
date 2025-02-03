@@ -1,5 +1,7 @@
 ﻿using E_knjiznica.Models.API;
 using Newtonsoft.Json.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace E_knjiznica.Services
 {
@@ -33,6 +35,13 @@ namespace E_knjiznica.Services
             }).ToList();
 
             return books ?? new List<OpenLibraryBook>();
+        }
+        public async Task<string> GetRawSearchResultsAsync(string query)
+        {
+            var response = await _httpClient.GetAsync($"https://openlibrary.org/search.json?q={query}");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync();
+
         }
     }
 }

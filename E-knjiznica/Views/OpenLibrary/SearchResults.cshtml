@@ -1,0 +1,27 @@
+﻿@model IEnumerable<E_knjiznica.Models.API.OpenLibraryBook>
+
+
+<h2>📚 Rezultati pretrage</h2>
+
+@if (!Model.Any())
+{
+    <p>❌ Nema rezultata za pretragu.</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var book in Model)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <img src="https://covers.openlibrary.org/b/id/@(book.CoverId)-L.jpg" class="card-img-top" alt="Naslovnica" />
+                    <div class="card-body">
+                        <h5 class="card-title">@book.Title</h5>
+                        <p class="card-text">✍️ @book.AuthorName</p>
+                        <p class="card-text">📅 Izdano: @book.FirstPublishYear</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

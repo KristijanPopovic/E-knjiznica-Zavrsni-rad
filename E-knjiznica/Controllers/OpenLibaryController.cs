@@ -29,14 +29,10 @@ namespace E_knjiznica.Controllers
         [HttpPost]
         public async Task<IActionResult> Search(string query)
         {
-            if (string.IsNullOrWhiteSpace(query))
-            {
-                return View(); // Prikaz praznog pretraživanja
-            }
-
             var books = await _openLibraryService.SearchBooksAsync(query);
-            return View(books);
+            return View("SearchResults", books); // ✅ Pravilno prosljeđivanje liste knjiga
         }
+
 
         [HttpPost]
         public async Task<IActionResult> SaveBook(string title, string author, string publishedYear, string coverUrl, string genre)
@@ -125,5 +121,6 @@ namespace E_knjiznica.Controllers
 
             return RedirectToAction("Index", "Books");
         }
+
     }
 }

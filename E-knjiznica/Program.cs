@@ -1,4 +1,5 @@
 ﻿using E_knjiznica.Data;
+using E_knjiznica.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -9,6 +10,9 @@ var builder = WebApplication.CreateBuilder(args);
 // ✅ Database Configuration
 builder.Services.AddDbContext<LibraryDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddHttpClient();
+builder.Services.AddHttpClient<OpenLibraryService>(); // ✅ Registracija OpenLibraryService
+
 
 // ✅ Identity Configuration
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
