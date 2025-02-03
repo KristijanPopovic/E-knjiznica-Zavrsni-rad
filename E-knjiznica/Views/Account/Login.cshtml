@@ -1,24 +1,15 @@
-﻿@model E_knjiznica.ViewModels.LoginViewModel
+﻿@model E_knjiznica.Models.LoginViewModel
 
-<div class="container mt-5">
-    <h2 class="text-center">🔐 Prijava</h2>
+<h2>Prijava</h2>
 
-    <form asp-action="Login" method="post" class="w-50 mx-auto shadow p-4 border rounded">
-        <div class="mb-3">
-            <label for="email">E-mail:</label>
-            <input asp-for="Email" class="form-control" placeholder="Unesite e-mail" required />
-        </div>
-
-        <div class="mb-3">
-            <label for="password">Lozinka:</label>
-            <input asp-for="Password" type="password" class="form-control" placeholder="Unesite lozinku" required />
-        </div>
-
-        <button type="submit" class="btn btn-primary w-100">Prijavi se 🔑</button>
-
-        @if (ViewData.ModelState.ErrorCount > 0)
-        {
-            <div class="alert alert-danger mt-3">⚠️ Pogrešan e-mail ili lozinka!</div>
-        }
-    </form>
-</div>
+<form asp-action="Login" method="post">
+    <div>
+        <label>Email:</label>
+        <input asp-for="Email" />
+    </div>
+    <div>
+        <label>Lozinka:</label>
+        <input asp-for="Password" type="password" />
+    </div>
+    <button type="submit">Prijavi se</button>
+</form>

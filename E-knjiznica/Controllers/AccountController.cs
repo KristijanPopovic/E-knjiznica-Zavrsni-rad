@@ -1,14 +1,15 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using E_knjiznica.Models;
-using E_knjiznica.ViewModels;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 public class AccountController : Controller
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly UserManager<IdentityUser> _userManager;
+    private readonly SignInManager<IdentityUser> _signInManager;
 
-    public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+    public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -17,28 +18,35 @@ public class AccountController : Controller
     public IActionResult Login() => View();
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
+    public async Task<IActionResult> Login(LoginViewModel model)
     {
-        returnUrl ??= Url.Content("~/");
-
         if (ModelState.IsValid)
         {
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
-            if (result.Succeeded)
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user != null)
             {
-                return RedirectToAction("Index", "Home"); // ✅ Preusmjeravanje nakon prijave
-            }
-            ModelState.AddModelError(string.Empty, "Neuspješna prijava.");
-        }
+                var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
+                if (result.Succeeded)
+                {
+                    if (await _userManager.IsInRoleAsync(user, "Admin"))
+                        return RedirectToAction("AdminDashboard", "Home");
 
+                    return RedirectToAction("UserDashboard", "Home");
+                }
+            }
+        }
+        ModelState.AddModelError("", "Neispravni podaci.");
         return View(model);
     }
-
 
     public async Task<IActionResult> Logout()
     {
         await _signInManager.SignOutAsync();
         return RedirectToAction("Login");
     }
+    [Authorize(Roles = "Admin")]
+    public IActionResult AdminDashboard() => View();
+
+    [Authorize(Roles = "User,Admin")]
+    public IActionResult UserDashboard() => View();
 }
