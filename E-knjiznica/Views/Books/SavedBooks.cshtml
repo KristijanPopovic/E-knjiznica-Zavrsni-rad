@@ -1,16 +1,15 @@
 ﻿@model IEnumerable<E_knjiznica.Models.Book>
 
-<h2>📚 Moja knjižnica</h2>
+<div class="container mt-4">
+    <h2 class="mb-4 text-center">📚 Moje posuđene knjige</h2>
 
-@if (Model.Any())
-{
     <table class="table table-striped">
-        <thead>
+        <thead class="table-dark">
             <tr>
                 <th>Naslov</th>
                 <th>Autor</th>
-                <th>Godina</th>
-                <th>Naslovnica</th>
+                <th>Datum posudbe</th>
+                <th>Datum povratka</th> <!-- Prikazujemo ovdje -->
                 <th>Akcije</th>
             </tr>
         </thead>
@@ -19,23 +18,17 @@
             {
                 <tr>
                     <td>@book.Title</td>
-                    <td>@book.Author</td>
-                    <td>@book.PublishedYear</td>
+                    <td>@(book.Author?.Name ?? "Nepoznato")</td>
+                    <td>@(book.BorrowedDate.HasValue ? book.BorrowedDate.Value.ToShortDateString() : "-")</td>
+                    <td>@(book.ReturnDate.HasValue ? book.ReturnDate.Value.ToShortDateString() : "-")</td>
+
                     <td>
-                        <img src="@book.CoverUrl" alt="Naslovnica" style="height: 100px;" />
-                    </td>
-                    <td>
-                        <form asp-action="DeleteBook" method="post" style="display:inline;">
-                            <input type="hidden" name="id" value="@book.Id" />
-                            <button type="submit" class="btn btn-danger">🗑️ Obriši</button>
+                        <form asp-action="Return" asp-route-id="@book.Id" method="post">
+                            <button type="submit" class="btn btn-danger btn-sm">🔄 Vrati</button>
                         </form>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
-}
-else
-{
-    <p>❌ Trenutno nema spremljenih knjiga.</p>
-}
+</div>

@@ -25,17 +25,15 @@
     </form>
 
     <div class="table-responsive">
-        <table class="table table-hover table-striped shadow-sm text-center">
+        <table class="table table-hover table-striped shadow-sm">
             <thead class="table-dark">
                 <tr>
-                    <th>Naslovnica</th>
                     <th>Naslov</th>
                     <th>Autor</th>
                     <th>Žanr</th>
                     <th>Datum izdavanja</th>
                     <th>Recenzije</th>
                     <th>Status</th>
-                    <th>Datum povrata ⏰</th>
                     <th>Akcije</th>
                 </tr>
             </thead>
@@ -43,9 +41,6 @@
                 @foreach (var book in Model)
                 {
                     <tr>
-                        <td>
-                            <img src="@book.CoverUrl" alt="Naslovnica" style="width: 60px; height: 90px; object-fit: cover;" />
-                        </td>
                         <td>@book.Title</td>
                         <td>@(book.Author?.Name ?? "Nepoznato")</td>
                         <td>@(book.Genre ?? "Nepoznato")</td>
@@ -63,20 +58,19 @@
                             }
                         </td>
 
-                        <td>@(book.IsBorrowed ? "❌ Nije dostupno" : "✅ Dostupna")</td>
-                        <td>@(book.ReturnDate.HasValue ? book.ReturnDate.Value.ToShortDateString() : "-")</td>
+                        <td>@(book.IsBorrowed == true ? "Posuđeno" : "Dostupno")</td>
 
                         <td>
-                            @if (!book.IsBorrowed)
+                            @if (book.IsBorrowed == false)
                             {
-                                <form asp-action="Borrow" asp-route-id="@book.Id" method="post">
-                                    <button type="submit" class="btn btn-warning btn-sm">📚 Posudi</button>
+                                <form asp-action="Borrow" asp-route-id="@book.Id" method="post" style="display:inline;">
+                                    <button type="submit" class="btn btn-warning btn-sm">📖 Posudi</button>
                                 </form>
                             }
                             else
                             {
-                                <form asp-action="Return" asp-route-id="@book.Id" method="post">
-                                    <button type="submit" class="btn btn-danger btn-sm">🔄 Vrati</button>
+                                <form asp-action="Return" asp-route-id="@book.Id" method="post" style="display:inline;">
+                                    <button type="submit" class="btn btn-success btn-sm">🔄 Vrati</button>
                                 </form>
                             }
                         </td>
@@ -90,18 +84,4 @@
         <a asp-action="Create" class="btn btn-success">➕ Dodaj novu knjigu</a>
         <p class="alert alert-info mb-0">ℹ️ Sva posudba knjiga ograničena je na maksimalno 30 dana.</p>
     </div>
-
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
-    }
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
-    }
-
-    <!-- ✅ Gumb za uvoz 30 knjiga -->
-    <form asp-controller="OpenLibrary" asp-action="ImportBooks" method="post">
-        <button type="submit" class="btn btn-primary mt-3">📥 Uvezi 30 knjiga</button>
-    </form>
 </div>

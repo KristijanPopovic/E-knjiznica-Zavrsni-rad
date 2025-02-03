@@ -4,25 +4,26 @@ using E_knjiznica.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.AspNetCore.Identity;
 
 namespace E_knjiznica.Controllers
 {
     public class BooksController : Controller
     {
         private readonly LibraryDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public BooksController(LibraryDbContext context)
+        public BooksController(LibraryDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index(string searchTitle, string searchAuthor, string searchGenre, int? searchYear)
         {
             try
             {
-                var books = _context.Books
-                    .Include(b => b.Author)
-                    .AsQueryable();
+                var books = _context.Books.Include(b => b.Author).AsQueryable();
 
                 if (!string.IsNullOrEmpty(searchTitle))
                     books = books.Where(b => b.Title.Contains(searchTitle));
@@ -36,21 +37,7 @@ namespace E_knjiznica.Controllers
                 if (searchYear.HasValue)
                     books = books.Where(b => b.PublishedYear == searchYear.Value.ToString());
 
-                var result = await books
-    .Select(b => new Book
-    {
-        Id = b.Id,
-        Title = b.Title,
-        Author = b.Author,
-        Genre = b.Genre,
-        PublishedYear = b.PublishedYear,
-        BorrowedDate = b.BorrowedDate.HasValue ? b.BorrowedDate : null,
-        ReturnDate = b.ReturnDate.HasValue ? b.ReturnDate : null,
-        IsBorrowed = b.IsBorrowed
-    })
-
-                    .ToListAsync();
-
+                var result = await books.ToListAsync();
                 return View(result);
             }
             catch (Exception ex)
@@ -77,19 +64,24 @@ namespace E_knjiznica.Controllers
             return View(book);
         }
 
+        [HttpPost]
         public async Task<IActionResult> Borrow(int id)
         {
             var book = await _context.Books.FindAsync(id);
-            if (book == null || book.IsBorrowed)
+
+            if (book == null)
             {
                 return NotFound();
             }
 
-            book.IsBorrowed = true;
-            book.BorrowedDate = DateTime.Now;
-            book.ReturnDate = DateTime.Now.AddDays(30);
+            if (!book.IsBorrowed)
+            {
+                book.IsBorrowed = true;
+                book.BorrowedDate = DateTime.Now;
+                book.ReturnDate = DateTime.Now.AddDays(14);
 
-            await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
+            }
 
             return RedirectToAction(nameof(Index));
         }
@@ -103,8 +95,9 @@ namespace E_knjiznica.Controllers
             }
 
             book.IsBorrowed = false;
-            book.BorrowedDate = new DateTime(1753, 1, 1);
-            book.ReturnDate = new DateTime(1753, 1, 1);
+            book.BorrowedDate = null;
+            book.ReturnDate = null;
+            book.BorrowedByUserId = null;
 
             await _context.SaveChangesAsync();
 
@@ -113,23 +106,10 @@ namespace E_knjiznica.Controllers
 
         public async Task<IActionResult> SavedBooks()
         {
-            var books = await _context.Books
-                .Select(b => new Book
-                {
-                    Id = b.Id,
-                    Title = b.Title,
-                    Author = b.Author,
-                    Genre = b.Genre,
-                    PublishedYear = b.PublishedYear,
-                    BorrowedDate = b.BorrowedDate.HasValue ? b.BorrowedDate.Value : (DateTime?)null,
-                    ReturnDate = b.ReturnDate.HasValue ? b.ReturnDate.Value : (DateTime?)null,
-                    IsBorrowed = b.IsBorrowed
-                })
-                .ToListAsync();
-
+            var userId = _userManager.GetUserId(User);
+            var books = await _context.Books.Where(b => b.IsBorrowed && b.BorrowedByUserId == userId).ToListAsync();
             return View(books);
         }
-
 
         [HttpPost]
         public async Task<IActionResult> DeleteBook(int id)
@@ -146,22 +126,19 @@ namespace E_knjiznica.Controllers
         public async Task<IActionResult> DueSoon()
         {
             var today = DateTime.Now;
-            var dueSoonBooks = await _context.Books
-                .Where(b => b.IsBorrowed && b.ReturnDate.HasValue && b.ReturnDate.Value <= today.AddDays(3))
-                .ToListAsync();
-
+            var dueSoonBooks = await _context.Books.Where(b => b.IsBorrowed && b.ReturnDate.HasValue && b.ReturnDate.Value <= today.AddDays(3)).ToListAsync();
             return View(dueSoonBooks);
         }
 
         public async Task<IActionResult> Details(int id)
         {
-            var book = await _context.Books
-                .Include(b => b.Reviews)
-                .FirstOrDefaultAsync(b => b.Id == id);
-
+            var book = await _context.Books.FindAsync(id);
             if (book == null)
+            {
                 return NotFound();
+            }
 
+            var dueDate = book.ReturnDate ?? DateTime.Now.AddDays(14);
             return View(book);
         }
     }

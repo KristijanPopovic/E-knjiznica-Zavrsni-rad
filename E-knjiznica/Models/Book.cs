@@ -10,38 +10,36 @@ namespace E_knjiznica.Models
     public class Book
     {
         [Key]
-        public int Id { get; set; } // Primarni ključ knjige
+        public int Id { get; set; }
 
         [Required]
         [StringLength(100)]
-        public string Title { get; set; } // Naslov knjige
+        public string Title { get; set; }
 
         [Required]
-        public string Genre { get; set; } // Žanr knjige
-
-        [Required]
-        [DataType(DataType.Date)]
-        public DateTime? BorrowedDate { get; set; } = new DateTime(1753, 1, 1); // Datum kada je knjiga posuđena
+        public string Genre { get; set; }
 
         [DataType(DataType.Date)]
-        public DateTime? ReturnDate { get; set; } = new DateTime(1753, 1, 1); // Datum povrata
+        public DateTime? BorrowedDate { get; set; } = null;
 
-        public bool IsBorrowed { get; set; } = false; // Oznaka je li knjiga posuđena
+        [DataType(DataType.Date)]
+        public DateTime? ReturnDate { get; set; } = null;
+
+        public bool IsBorrowed { get; set; } = false;
 
         [ForeignKey("BorrowedByUser")]
-        public string? BorrowedByUserId { get; set; } // ID korisnika koji je posudio knjigu
+        public string? BorrowedByUserId { get; set; }
         public IdentityUser? BorrowedByUser { get; set; }
 
-        // ✅ Dodano povezivanje s autorom
         [ForeignKey("Author")]
         public int? AuthorId { get; set; }
         public Author? Author { get; set; }
 
-        public List<Review> Reviews { get; set; } = new List<Review>(); // Lista recenzija
+        public List<Review> Reviews { get; set; } = new List<Review>();
 
         public double AverageRating => (Reviews != null && Reviews.Any()) ? Reviews.Average(r => r.Rating) : 0;
 
-        public string PublishedYear { get; set; } // Godina izdavanja
-        public string CoverUrl { get; set; } // Slika naslovnice
+        public string PublishedYear { get; set; }
+        public string CoverUrl { get; set; }
     }
 }
