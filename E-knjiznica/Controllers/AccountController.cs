@@ -33,20 +33,34 @@ namespace E_knjiznica.Controllers
                 var user = await _userManager.FindByEmailAsync(model.Email);
                 if (user != null)
                 {
+                    // ✅ Debugging output
+                    Console.WriteLine($"Found user: {user.Email}");
+
                     var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, false, false);
                     if (result.Succeeded)
                     {
+                        Console.WriteLine("Login successful!");
+
                         var roles = await _userManager.GetRolesAsync(user);
                         if (roles.Contains("Admin"))
                             return RedirectToAction("Index", "Books");  // Admin dashboard
                         else
                             return RedirectToAction("MyBooks", "Books");  // User's borrowed books
                     }
+                    else
+                    {
+                        Console.WriteLine("Password incorrect.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("User not found.");
                 }
                 ModelState.AddModelError(string.Empty, "Pogrešan email ili lozinka.");
             }
             return View(model);
         }
+
 
         public async Task<IActionResult> Logout()
         {

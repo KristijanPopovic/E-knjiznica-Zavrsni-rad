@@ -6,26 +6,31 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ✅ Konfiguracija baze podataka
+// ✅ Database Configuration
 builder.Services.AddDbContext<LibraryDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// ✅ Dodavanje ASP.NET Identity
+// ✅ Add ASP.NET Identity with Password Policy Adjustments
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequiredLength = 4;  // ✅ Allow simple passwords like "admin"
 })
 .AddEntityFrameworkStores<LibraryDbContext>()
 .AddDefaultTokenProviders();
 
-// ✅ Konfiguracija kolačića
+// ✅ Cookie Configuration for Authentication
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login";
     options.AccessDeniedPath = "/Account/AccessDenied";
 });
 
-// ✅ Globalna autorizacija
+// ✅ Global Authorization Policy
 builder.Services.AddControllersWithViews(options =>
 {
     var policy = new AuthorizationPolicyBuilder()
@@ -50,14 +55,14 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// ✅ Inicijalizacija admin korisnika
+// ✅ Admin User Initialization
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-    // Kreiranje uloga
+    // ✅ Create Roles if Not Exist
     string[] roles = { "Admin", "User" };
     foreach (var role in roles)
     {
@@ -67,23 +72,25 @@ using (var scope = app.Services.CreateScope())
         }
     }
 
-    // ✅ Kreiranje admin korisnika
+    // ✅ Recreate Admin User to Avoid Old Issues
     var adminEmail = "admin@admin.com";
     var adminPassword = "admin";
     var adminUser = await userManager.FindByEmailAsync(adminEmail);
 
-    if (adminUser == null)
+    if (adminUser != null)
     {
-        adminUser = new IdentityUser { UserName = adminEmail, Email = adminEmail };
-        var result = await userManager.CreateAsync(adminUser, adminPassword);
-        if (result.Succeeded)
-        {
-            await userManager.AddToRoleAsync(adminUser, "Admin");
-        }
+        await userManager.DeleteAsync(adminUser);  // ✅ Delete Old Admin if Exists
+    }
+
+    adminUser = new IdentityUser { UserName = adminEmail, Email = adminEmail };
+    var result = await userManager.CreateAsync(adminUser, adminPassword);
+    if (result.Succeeded)
+    {
+        await userManager.AddToRoleAsync(adminUser, "Admin");
     }
 }
 
-// ✅ Prva stranica -> Login
+// ✅ Redirect to Login Page as Default
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Account}/{action=Login}/{id?}");
