@@ -5,23 +5,25 @@
 <form asp-action="Login" method="post">
     <div class="form-group">
         <label>Email:</label>
-        <input asp-for="Email" class="form-control" />
+        <input asp-for="Email" class="form-control" placeholder="Unesite email" />
         <span asp-validation-for="Email" class="text-danger"></span>
     </div>
+
     <div class="form-group">
         <label>Lozinka:</label>
-        <input asp-for="Password" type="password" class="form-control" />
+        <input asp-for="Password" type="password" class="form-control" placeholder="Unesite lozinku" />
         <span asp-validation-for="Password" class="text-danger"></span>
     </div>
-    <button type="submit" class="btn btn-primary">Prijavi se</button>
+
+    <button type="submit" class="btn btn-primary mt-2">Prijavi se</button>
 </form>
 
 @if (ViewData.ModelState.ErrorCount > 0)
 {
-    <div class="alert alert-danger mt-2">
+        <div class="alert alert-danger mt-3">
         @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
         {
-            <p>@error.ErrorMessage</p>
+                    <p>@error.ErrorMessage</p>
         }
-    </div>
+        </div>
 }

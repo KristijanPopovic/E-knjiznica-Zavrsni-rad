@@ -1,0 +1,17 @@
+﻿@model E_knjiznica.Models.RegisterViewModel
+
+<h2>Registracija korisnika</h2>
+
+<form asp-action="Register" method="post">
+    <div class="form-group">
+        <label>Email:</label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label>Lozinka:</label>
+        <input asp-for="Password" type="password" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-success">Registriraj se</button>
+</form>
