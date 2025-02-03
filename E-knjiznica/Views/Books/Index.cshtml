@@ -24,75 +24,36 @@
         </div>
     </form>
 
-    <div class="table-responsive">
-        <table class="table table-hover table-striped shadow-sm">
-            <thead class="table-dark">
-                <tr>
-                    <th>Naslov</th>
-                    <th>Naslovnica</th> <!-- ✅ Dodano novo polje za sliku -->
-                    <th>Autor</th>
-                    <th>Žanr</th>
-                    <th>Datum izdavanja</th>
-                    <th>Recenzije</th>
-                    <th>Status</th>
-                    <th>Akcije</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var book in Model)
-                {
-                    <tr>
-                        <td>@book.Title</td>
-                        <td>
-                            @if (!string.IsNullOrEmpty(book.CoverUrl))
-                            {
-                                <img src="@book.CoverUrl" alt="Naslovnica" style="width: 60px; height: auto;" /> <!-- ✅ Prikaz slike -->
-                            }
-                            else
-                            {
-                                <span class="text-muted">Nema slike</span>
-                            }
-                        </td>
-                        <td>@(book.Author?.Name ?? "Nepoznato")</td>
-                        <td>@(book.Genre ?? "Nepoznato")</td>
-                        <td>@(string.IsNullOrEmpty(book.PublishedYear) ? "-" : book.PublishedYear)</td>
-
-                        <td>
-                            @if (book.Reviews != null && book.Reviews.Any())
-                            {
-                                <span>@book.Reviews.Average(r => r.Rating) ⭐</span> <br />
-                                <a asp-controller="Books" asp-action="Details" asp-route-id="@book.Id" class="link-primary">Pogledaj recenzije</a>
-                            }
-                            else
-                            {
-                                <span class="text-muted">Nema recenzija</span>
-                            }
-                        </td>
-
-                        <td>@(book.IsBorrowed == true ? "Posuđeno" : "Dostupno")</td>
-
-                        <td>
-                            @if (book.IsBorrowed == false)
-                            {
-                                <form asp-action="Borrow" asp-route-id="@book.Id" method="post" style="display:inline;">
-                                    <button type="submit" class="btn btn-warning btn-sm">📖 Posudi</button>
-                                </form>
-                            }
-                            else
-                            {
-                                <form asp-action="Return" asp-route-id="@book.Id" method="post" style="display:inline;">
-                                    <button type="submit" class="btn btn-success btn-sm">🔄 Vrati</button>
-                                </form>
-                            }
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-
-    <div class="d-flex justify-content-between align-items-center mt-4">
-        <a asp-action="Create" class="btn btn-success">➕ Dodaj novu knjigu</a>
-        <p class="alert alert-info mb-0">ℹ️ Sva posudba knjiga ograničena je na maksimalno 30 dana.</p>
+    <!-- 📚 Prikaz knjiga kao kartice -->
+    <div class="row row-cols-1 row-cols-md-4 g-4">
+        @foreach (var book in Model)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img src="@book.CoverUrl" class="card-img-top" alt="Naslovnica" style="height: 250px; object-fit: cover;" />
+                    <div class="card-body">
+                        <h5 class="card-title">@book.Title</h5>
+                        <p class="card-text"><strong>Autor:</strong> @(book.Author?.Name ?? "Nepoznato")</p>
+                        <p class="card-text"><strong>Žanr:</strong> @(book.Genre ?? "Nepoznato")</p>
+                        <p class="card-text"><strong>Izdano:</strong> @(string.IsNullOrEmpty(book.PublishedYear) ? "-" : book.PublishedYear)</p>
+                    </div>
+                    <div class="card-footer text-center">
+                        @if (book.IsBorrowed)
+                        {
+                            <button class="btn btn-secondary btn-sm" disabled>📖 Posuđeno</button>
+                            <form asp-action="Return" asp-route-id="@book.Id" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-success btn-sm mt-2">🔄 Vrati</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-action="Borrow" asp-route-id="@book.Id" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-warning btn-sm">📖 Posudi</button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
     </div>
 </div>
