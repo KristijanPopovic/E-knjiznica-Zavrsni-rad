@@ -107,7 +107,11 @@ namespace E_knjiznica.Controllers
         public async Task<IActionResult> SavedBooks()
         {
             var userId = _userManager.GetUserId(User);
-            var books = await _context.Books.Where(b => b.IsBorrowed && b.BorrowedByUserId == userId).ToListAsync();
+
+            var books = await _context.Books
+                .Where(b => b.IsBorrowed && b.BorrowedByUserId == userId)
+                .Include(b => b.Author) // ✅ Dodano kako bi prikazali podatke o autoru
+                .ToListAsync();
 
             return View(books);
         }

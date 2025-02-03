@@ -1,6 +1,7 @@
 ﻿using E_knjiznica.Data;
 using E_knjiznica.Models;
 using E_knjiznica.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -13,12 +14,15 @@ namespace E_knjiznica.Controllers
         private readonly OpenLibraryService _openLibraryService;
         private readonly LibraryDbContext _context;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly UserManager<IdentityUser> _userManager; // ✅ Dodano
 
-        public OpenLibraryController(OpenLibraryService openLibraryService, LibraryDbContext context, IHttpClientFactory httpClientFactory)
+        public OpenLibraryController(OpenLibraryService openLibraryService, LibraryDbContext context, IHttpClientFactory httpClientFactory, UserManager<IdentityUser> userManager)
         {
             _openLibraryService = openLibraryService;
             _context = context;
             _httpClientFactory = httpClientFactory;
+            _userManager = userManager; // ✅ Inicijalizacija UserManager-a
+
         }
 
         public IActionResult Search()
@@ -50,7 +54,9 @@ namespace E_knjiznica.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            if (!_context.Books.Any(b => b.Title == title && b.Author.Name == author))
+            var userId = _userManager.GetUserId(User); // ✅ Trenutni korisnik
+
+            if (!_context.Books.Any(b => b.Title == title && b.BorrowedByUserId == userId))
             {
                 var book = new Book
                 {
@@ -59,14 +65,17 @@ namespace E_knjiznica.Controllers
                     PublishedYear = publishedYear ?? "Nepoznato",
                     CoverUrl = coverUrl ?? "/images/default_cover.jpg",
                     Genre = "Nepoznat žanr",
-                    IsBorrowed = false
+                    IsBorrowed = true,                 // ✅ Oznaka da je knjiga posuđena
+                    BorrowedByUserId = userId,         // ✅ Dodavanje ID-a korisnika
+                    BorrowedDate = DateTime.Now,
+                    ReturnDate = DateTime.Now.AddDays(30)
                 };
 
                 _context.Books.Add(book);
                 await _context.SaveChangesAsync();
             }
 
-            return RedirectToAction("SavedBooks", "Books"); // ✅ Nakon spremanja preusmjeri na Moja knjižnica
+            return RedirectToAction("SavedBooks", "Books"); // ✅ Prikaz posuđenih knjiga
         }
 
         public async Task<IActionResult> ImportBooks()
