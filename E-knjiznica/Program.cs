@@ -1,4 +1,5 @@
 ﻿using E_knjiznica.Data;
+using E_knjiznica.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -40,6 +41,10 @@ builder.Services.AddControllersWithViews(options =>
 });
 
 builder.Services.AddRazorPages();
+
+// ✅ Register OpenLibraryService
+builder.Services.AddHttpClient<OpenLibraryService>();
+builder.Services.AddHttpClient(); // General HTTP client
 
 var app = builder.Build();
 

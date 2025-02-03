@@ -31,8 +31,7 @@ namespace E_knjiznica.Controllers
         {
             if (string.IsNullOrWhiteSpace(query))
             {
-                ViewBag.ErrorMessage = "Molimo unesite pojam za pretragu.";
-                return View();
+                return View(); // Prikaz praznog pretraživanja
             }
 
             var books = await _openLibraryService.SearchBooksAsync(query);
